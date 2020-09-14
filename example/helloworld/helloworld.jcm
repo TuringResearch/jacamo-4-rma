@@ -1,0 +1,9 @@
+mas helloworld {
+	agent communicator : communicator.asl {
+      	ag-arch: jason.architecture.Communicator
+	}
+	
+	agent argo : argo.asl {
+		ag-arch: jason.architecture.Argo
+	}
+}
