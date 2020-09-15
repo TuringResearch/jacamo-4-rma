@@ -13,6 +13,7 @@
 	.send(communicator, tell, resource1(R1));
 	.random(R2);
 	.send(communicator, tell, resource2(R2));
+	.print("argo executando");
 	.wait(1000);
 	!start.
 

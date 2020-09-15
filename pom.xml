@@ -7,53 +7,15 @@
     <groupId>br.pro.turing</groupId>
     <artifactId>rma-4-jacamo</artifactId>
     <version>1.0.0</version>
+    <packaging>pom</packaging>
 
-    <build>
-        <sourceDirectory>java</sourceDirectory>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}</outputDirectory>
-                            <overWriteReleases>false</overWriteReleases>
-                            <overWriteSnapshots>false</overWriteSnapshots>
-                            <overWriteIfNewer>true</overWriteIfNewer>
-                            <includeScope>runtime</includeScope>
-                            <excludeScope>provided</excludeScope>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>8</source>
-                    <target>8</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    <modules>
+        <module>rma-4-cartago</module>
+        <module>rma-4-jason</module>
+        <module>distribution</module>
+    </modules>
 
     <dependencies>
-        <dependency>
-            <groupId>jason-lang</groupId>
-            <artifactId>jason</artifactId>
-            <version>2.4</version>
-        </dependency>
-        <dependency>
-            <groupId>CArtAgO-lang</groupId>
-            <artifactId>cartago</artifactId>
-            <version>2.4</version>
-        </dependency>
         <dependency>
             <groupId>br.pucrio.inf.lac</groupId>
             <artifactId>contextnet</artifactId>

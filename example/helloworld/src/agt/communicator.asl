@@ -11,6 +11,7 @@
 	
 +!rmlCycle : true <-
 	.sendToRml;
+	.print("Communicator executando...");
 	.wait(1000);
 	!rmlCycle.
 

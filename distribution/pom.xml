@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>rma-4-jacamo</artifactId>
+        <groupId>br.pro.turing</groupId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>distribution</artifactId>
+
+    <packaging>pom</packaging>
+
+    <name>Packaging : Distribution</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>cartago</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>jason</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <target>
+                                <!-- Juntando o jar do cartago com o jar do rma-4-cartago. -->
+                                <unzip src="${basedir}/../lib/cartago-2.4.jar" dest="target/cartago-2.4"
+                                       overwrite="true"/>
+                                <unzip src="${basedir}/../rma-4-cartago/target/rma-4-cartago-1.0.0.jar"
+                                       dest="target/cartago-2.4"
+                                       overwrite="true"/>
+                                <zip destfile="target/lib/cartago-2.4.jar"
+                                     basedir="${project.basedir}/target/cartago-2.4"/>
+
+                                <!-- Juntando o jar do jason com o jar do rma-4-jason. -->
+                                <unzip src="${basedir}/../lib/jason-2.4.jar" dest="target/jason-2.4"
+                                       overwrite="true"/>
+                                <unzip src="${basedir}/../rma-4-jason/target/rma-4-jason-1.0.0.jar"
+                                       dest="target/jason-2.4"
+                                       overwrite="true"/>
+                                <zip destfile="target/lib/jason-2.4.jar" basedir="${project.basedir}/target/jason-2.4"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>rma-4-jacamo-assembly.xml</descriptor>
+                            </descriptors>
+                            <finalName>rma-4-jacamo-${project.version}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

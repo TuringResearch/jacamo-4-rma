@@ -13,6 +13,7 @@ import jason.bb.BeliefBase;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class sendToRml extends DefaultInternalAction {
@@ -32,30 +33,27 @@ public class sendToRml extends DefaultInternalAction {
         super.execute(ts, un, args);
         Communicator communicator = Communicator.getCommunicatorArch(ts.getUserAgArch());
         if (communicator != null) {
-            List<Literal> nonResourceDataList = new ArrayList<>();
+            final boolean[] hasResourceData = {false};
             final BeliefBase bb = ts.getAg().getBB();
             bb.forEach(literal -> {
                 String resourceName = literal.getFunctor();
-                boolean isResourceData = false;
                 for (Resource resource : communicator.getDevice().getResourceList()) {
                     if (resource.getResourceName().equals(resourceName)) {
                         String value = literal.getTerm(0).toString();
                         final Device device = communicator.getDevice();
+                        System.err.println("Enviando...");
                         communicator.sendToRml(
                                 new Data(LocalDateTime.now(), device.getDeviceName(), resourceName, value));
                         ts.getAg().getBB().remove(literal);
-                        isResourceData = true;
+                        System.err.println("Enviado!");
+                        hasResourceData[0] = true;
                         break;
                     }
                 }
-                if (!isResourceData) {
-                    nonResourceDataList.add(literal);
-                }
             });
 
-            if (!nonResourceDataList.isEmpty()) {
-                mountNonResourcesDataLog(ts, nonResourceDataList);
-                return false;
+            if (!hasResourceData[0]) {
+                ts.getLogger().warning("No beliefs is a Resource's Data");
             }
             return true;
         } else {
@@ -63,17 +61,5 @@ public class sendToRml extends DefaultInternalAction {
                     "Was not possible to call .sendToRml internal action because this AgArch is not a Communicator.");
             return false;
         }
-    }
-
-    private void mountNonResourcesDataLog(TransitionSystem ts, List<Literal> nonResourceDataList) {
-        StringBuilder nonResourcesData = new StringBuilder();
-        nonResourceDataList.forEach(literal -> {
-            if (nonResourceDataList.indexOf(literal) == nonResourceDataList.size() - 1) {
-                nonResourcesData.append(literal.toString());
-            } else {
-                nonResourcesData.append(literal.toString() + ", ");
-            }
-        });
-        ts.getLogger().warning("The beliefs are not Resources' Data: " + nonResourceDataList);
     }
 }
