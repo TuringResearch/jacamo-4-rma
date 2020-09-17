@@ -41,38 +41,20 @@ public class Argo extends AgArch {
     public Collection<Literal> perceive() {
         long perceiving = System.nanoTime();
 
-        // System.out.println(perceiving + ";" + lastPerceived + "; " +
-        // (perceiving - lastPerceived ));
         if (((perceiving - this.lastPerceived) < this.limit) || this.blocked) {
-            // System.out.println("I'm in! " + this.blocked);
             return null;
         }
         this.lastPerceived = perceiving;
 
         int cont;
         List<Literal> jPercept = new ArrayList<Literal>();
-        // Boolean hasMsg =
-        // this.jBridge.requestData("","getPercepts");//this.jBridge.listenArduino("");
-        // if (hasMsg) {
         if (this.javino.requestData(this.port, "getPercepts")) {
             String rwPercepts = this.javino.getData();
             String[] perception = rwPercepts.split(";");
-            //if (rwPercepts != null) {
-            // System.out.println("[javino] msg: ok");
-            // ********* log middleware Pantoja
-            // this.logStatus = "ok";
-            //}
-            // System.out.println("[javino] msg: " + rwPercepts);
-            for (cont = 0; cont <= perception.length - 1; cont++) {
+            for (cont = 0; cont < perception.length; cont++) {
                 jPercept.add(Literal.parseLiteral(perception[cont]));
-                // System.out.println("[javino] array: " + perception[cont]);
             }
-            // System.out.println("[javino]: " +jPercept.toString());
-            // percepts.add(jPercept);
-        } //else {
-        // ********* log middleware Pantoja
-        // this.logStatus = "error";
-        //}
+        }
         return jPercept;
     }
 

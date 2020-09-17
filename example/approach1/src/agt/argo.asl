@@ -8,13 +8,13 @@
 
 /* Plans */
 
-//+!start : true <- 
-//	.port(COM1);
-//	.percepts(open).
++!start : true <- 
+	.port(COM6);
+	.percepts(open).
 
 +resource1(T) <-
 	.send(communicator, tell, resource1(T)).
-
+	
 +resource2(T) <-
 	.send(communicator, tell, resource2(T)).
 

@@ -153,11 +153,6 @@ public class Communicator extends AgArch implements NodeConnectionListener {
         this.device = buildDeviceByConfigFile(deviceConfigFile.getPath());
     }
 
-    @Override
-    public void checkMail() {
-        super.checkMail();
-    }
-
     /**
      * Informs that this IoT Object is connected to RML server. Once connected, this Object will send a Device
      * instance to be registered (if not exists on RML) or logged in (if this device is already registered).

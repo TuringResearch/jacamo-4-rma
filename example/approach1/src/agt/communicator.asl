@@ -15,20 +15,16 @@
 	!iotObjectCycle.
 
 +!command1 : true <-
-	.print("Running the command 1.");
-	.send(argoCOM1, achieve, command1).
+	.send(argo, achieve, command1).
 	
 +!command2 : true <-
-	.print("Running the command 2.");
-	.send(argoCOM1, achieve, command2).
+	.send(argo, achieve, command2).
 		
 +!command3 : true <-
-	.print("Running the command 3.");
-	.send(argoCOM1, achieve, command3).
+	.send(argo, achieve, command3).
 		
 +!command4 : true <-
-	.print("Running the command 4.");
-	.send(argoCOM1, achieve, command4).
+	.send(argo, achieve, command4).
 
 { include("$jacamoJar/templates/common-cartago.asl") }
 { include("$jacamoJar/templates/common-moise.asl") }

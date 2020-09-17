@@ -7,14 +7,12 @@ import jason.architecture.Communicator;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
-import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
 import jason.bb.BeliefBase;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class sendToRml extends DefaultInternalAction {
 
@@ -33,27 +31,39 @@ public class sendToRml extends DefaultInternalAction {
         super.execute(ts, un, args);
         Communicator communicator = Communicator.getCommunicatorArch(ts.getUserAgArch());
         if (communicator != null) {
-            final boolean[] hasResourceData = {false};
+            Map<Resource, Data> resourceLiteralMap = new HashMap<>();
             final BeliefBase bb = ts.getAg().getBB();
+
+            // Converting beliefs into resources' Data if it is possible.
             bb.forEach(literal -> {
-                String resourceName = literal.getFunctor();
+                String beliefFunctor = literal.getFunctor();
                 for (Resource resource : communicator.getDevice().getResourceList()) {
-                    if (resource.getResourceName().equals(resourceName)) {
-                        String value = literal.getTerm(0).toString();
-                        final Device device = communicator.getDevice();
-                        System.err.println("Enviando...");
-                        communicator.sendToRml(
-                                new Data(LocalDateTime.now(), device.getDeviceName(), resourceName, value));
-                        ts.getAg().getBB().remove(literal);
-                        System.err.println("Enviado!");
-                        hasResourceData[0] = true;
-                        break;
+                    if (resource.getResourceName().equals(beliefFunctor)) {
+                        if (literal.getTerms().size() > 0 && literal.getTerm(0) != null) {
+                            // As the bb is organized in a stack structure, I am ignoring beliefs that represents
+                            // resources already added in the map.
+                            if (!resourceLiteralMap.containsKey(resource)) {
+                                String value = literal.getTerm(0).toString();
+                                final Device device = communicator.getDevice();
+                                final Data data = new Data(LocalDateTime.now(), device.getDeviceName(),
+                                        resource.getResourceName(), value);
+                                resourceLiteralMap.put(resource, data);
+                            } else {
+                                // Removing old belief from a resource.
+                                ts.getAg().getBB().remove(literal);
+                            }
+                            break;
+                        }
                     }
                 }
             });
 
-            if (!hasResourceData[0]) {
-                ts.getLogger().warning("No beliefs is a Resource's Data");
+            if (bb.size() > 0 && resourceLiteralMap.isEmpty()) {
+                ts.getLogger().warning("[sentToRml] No beliefs is a Resource's Data.");
+            } else if (!resourceLiteralMap.isEmpty()) {
+                resourceLiteralMap.forEach((resource, data) -> {
+                    communicator.sendToRml(data);
+                });
             }
             return true;
         } else {

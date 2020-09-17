@@ -8,7 +8,7 @@
       "resourceName": "resource1",
       "name": "Resource 1",
       "description": "This is the Resource 1",
-      "port": "COM1",
+      "port": "COM6",
       "dataUnit": "",
       "waitTimeInMillis": 5000,
       "commandList": [
@@ -26,7 +26,7 @@
       "resourceName": "resource2",
       "name": "Resource 2",
       "description": "This is the Resource 2",
-      "port": "COM1",
+      "port": "COM6",
       "dataUnit": "",
       "waitTimeInMillis": 5000,
       "commandList": [
