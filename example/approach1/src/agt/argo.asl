@@ -12,11 +12,17 @@
 	.port(COM6);
 	.percepts(open).
 
-+resource1(T) <-
-	.send(communicator, tell, resource1(T)).
++resource1(T) : T = 0 <-
+	.send(communicator, tell, resource1(Off)).
 	
-+resource2(T) <-
-	.send(communicator, tell, resource2(T)).
++resource1(T) : T = 1 <-
+	.send(communicator, tell, resource1(On)).
+	
++resource2(T) : T = 0 <-
+	.send(communicator, tell, resource2(Off)).
+	
++resource2(T) : T = 1 <-
+	.send(communicator, tell, resource2(On)).
 
 +!command1 : true <-
 	.print("Running the command 1.");

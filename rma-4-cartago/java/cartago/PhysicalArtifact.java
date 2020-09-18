@@ -66,8 +66,7 @@ public abstract class PhysicalArtifact extends Artifact {
                     }
 
                     // Lendo do microcontrolador e associando as medidas aos recursos.
-                    String resourcesData = PhysicalArtifact.this.getResourceData();
-                    String[] resourcesDataArray = resourcesData.split(";");
+                    String[] resourcesDataArray = PhysicalArtifact.this.percepts();
                     for (int i = 0; i < resourcesDataArray.length; i++) {
                         String[] keyValueArray = resourcesDataArray[i].split("\\(");
                         final String resourceName = keyValueArray[0];
@@ -131,7 +130,7 @@ public abstract class PhysicalArtifact extends Artifact {
         javinoIsBusy = false;
     }
 
-    public String getResourceData() {
+    public String[] percepts() {
         while (javinoIsBusy) {
             try {
                 Thread.sleep(10);
@@ -139,8 +138,8 @@ public abstract class PhysicalArtifact extends Artifact {
             }
         }
         javinoIsBusy = true;
-        boolean hasData = this.javino.requestData(this.port, "getResourceData");
-        String result = hasData ? this.javino.getData() : "";
+        boolean hasData = this.javino.requestData(this.port, "getPercepts");
+        String[] result = hasData ? this.javino.getData().split(";") : new String[]{};
         javinoIsBusy = false;
         return result;
     }
