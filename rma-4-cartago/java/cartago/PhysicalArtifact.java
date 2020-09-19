@@ -11,8 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public abstract class PhysicalArtifact extends Artifact {
 
@@ -25,6 +23,8 @@ public abstract class PhysicalArtifact extends Artifact {
     private int waitTimeout;
 
     private boolean javinoIsBusy = false;
+
+    private IoTObject ioTObject;
 
     public PhysicalArtifact() {
         super();
@@ -43,59 +43,44 @@ public abstract class PhysicalArtifact extends Artifact {
 
     protected abstract int defineWaitTimeout();
 
-    public void runAsIoTObject(String gatewayIP, int gatewayPort, String deviceConfigFolder) {
+    public abstract void onIoTAction(String command);
+
+    public void enableIoT(String deviceConfigFolder, String gatewayIP, int gatewayPort) {
         try {
-            String configFilePath = new File(deviceConfigFolder).getPath() + File.separator + "deviceConfiguration.json";
+            String configFilePath = new File(deviceConfigFolder).getPath() + File.separator
+                    + "deviceConfiguration.json";
             Device artifactDevice = IoTObject.buildDeviceByConfigFile(configFilePath);
-            final IoTObject ioTObject = new IoTObject(artifactDevice) {
+            this.ioTObject = new IoTObject(artifactDevice) {
                 @Override
                 protected void onAction(Action action) {
-                    PhysicalArtifact.this.send(action.getCommand());
+                    PhysicalArtifact.this.onIoTAction(action.getCommand());
                 }
 
                 @Override
                 protected ArrayList<Data> buildDataBuffer() {
                     ArrayList<Data> dataList = new ArrayList<Data>();
 
-                    // Mapeando recursos com os textos que representam valores.
-                    Map<Resource, String> resourceValueMap = new HashMap<Resource, String>();
-                    for (Resource r : this.getDevice().getResourceList()) {
-                        final LocalDateTime now = LocalDateTime.now();
-                        String value = IoTObject.DATE_TIME_FORMATTER.format(now) + IoTObject.SPLIT_TIME;
-                        resourceValueMap.put(r, value);
-                    }
-
-                    // Lendo do microcontrolador e associando as medidas aos recursos.
-                    String[] resourcesDataArray = PhysicalArtifact.this.percepts();
-                    for (int i = 0; i < resourcesDataArray.length; i++) {
-                        String[] keyValueArray = resourcesDataArray[i].split("\\(");
-                        final String resourceName = keyValueArray[0];
-                        String v = keyValueArray[1].replace(")", "");
-                        Resource r = resourceValueMap.keySet().stream().filter(
-                                r1 -> resourceName.equals(r1.getResourceName())).findFirst().orElse(null);
-                        if (resourceValueMap.containsKey(r)) {
-                            resourceValueMap.replace(r, resourceValueMap.get(r) + v + IoTObject.SPLIT_VALUE);
-                        }
-                    }
-
                     // Removendo o último SPLIT_VALUE de cada recurso.
+                    final LocalDateTime now = LocalDateTime.now();
                     for (Resource r : this.getDevice().getResourceList()) {
-                        resourceValueMap.computeIfAbsent(r,
-                                k -> resourceValueMap.get(r).substring(0, resourceValueMap.get(k).length() - 1));
-                        dataList.addAll(this.extractValue(r, resourceValueMap.get(r)));
+                        if (getObsProperty(r.getResourceName()) != null) {
+                            String value = getObsProperty(r.getResourceName()).stringValue();
+                            dataList.add(new Data(now, this.getDevice().getDeviceName(), r.getResourceName(), value));
+                        }
                     }
 
                     return dataList;
                 }
             };
-            ioTObject.connect(gatewayIP, gatewayPort);
+            this.ioTObject.connect(gatewayIP, gatewayPort);
             log("Connected in RML as an IoT device");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public String read() {
+    @OPERATION
+    public void percepts() {
         while (javinoIsBusy) {
             try {
                 Thread.sleep(10);
@@ -103,14 +88,23 @@ public abstract class PhysicalArtifact extends Artifact {
             }
         }
         javinoIsBusy = true;
-        boolean hasData = this.javino.listenArduino(this.port);
-        String result = hasData ? this.javino.getData() : "";
+        boolean hasData = this.javino.requestData(this.port, "getPercepts");
+        String[] results = hasData ? this.javino.getData().split(";") : new String[]{};
         javinoIsBusy = false;
-        return result;
 
+        for (String result : results) {
+            String[] datas = result.replace(")", "").split("\\(");
+            ObsProperty prop = getObsProperty(datas[0]);
+            if (prop != null) {
+                prop.updateValue(Integer.parseInt(datas[1]));
+            } else {
+                defineObsProperty(datas[0], datas[1]);
+            }
+        }
     }
 
-    public void send(String message) {
+    @OPERATION
+    public void act(String message) {
         while (javinoIsBusy) {
             try {
                 Thread.sleep(10);
@@ -128,19 +122,5 @@ public abstract class PhysicalArtifact extends Artifact {
             }
         }
         javinoIsBusy = false;
-    }
-
-    public String[] percepts() {
-        while (javinoIsBusy) {
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-            }
-        }
-        javinoIsBusy = true;
-        boolean hasData = this.javino.requestData(this.port, "getPercepts");
-        String[] result = hasData ? this.javino.getData().split(";") : new String[]{};
-        javinoIsBusy = false;
-        return result;
     }
 }

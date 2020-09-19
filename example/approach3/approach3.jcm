@@ -14,20 +14,12 @@
 
 mas approach3 {
 
-    agent sensorAgent : sensorAgent.asl {
-    	focus: sensorWkp.sensor
-    }
-
-	agent actuatorAgent : actuatorAgent.asl {
-    	focus: actuatorWkp.actuator
-    }
+    agent sample_agent : sample_agent.asl {
+    	focus: wkp.device
+	}    
 	
-	workspace sensorWkp {
-		artifact sensor: SensorArtifact()
-	}
-	
-	workspace actuatorWkp {
-		artifact actuator: ActuatorArtifact()
-	}
+	workspace wkp {
+		artifact device: approach3.Device()
+    }
 }
 

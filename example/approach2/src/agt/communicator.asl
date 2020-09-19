@@ -10,22 +10,22 @@
 	!iotObjectCycle.
 	
 +!iotObjectCycle : true <-
-	perceptsFromArtifact;
+	percepts;
 	.sendToRml;
 	.wait(1000);
 	!iotObjectCycle.
 	
 +!command1 : true <-
-	command1.
+	act(command1).
 	
 +!command2 : true <-
-	command2.
+	act(command2).
 		
 +!command3 : true <-
-	command3.
+	act(command3).
 		
 +!command4 : true <-
-	command4.
+	act(command4).
 
 { include("$jacamoJar/templates/common-cartago.asl") }
 { include("$jacamoJar/templates/common-moise.asl") }

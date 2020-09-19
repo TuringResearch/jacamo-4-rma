@@ -1,18 +1,26 @@
+/* Initial beliefs and rules */
+
+/* Initial goals */
 !start.
 
-+!start : true <-
+/* Plans */
++!start : true <- 
 	percepts;
-	.wait(1000);
+	//.wait(1000);
 	!start.
 	
-+luminosity(Status) : Status > 700 <-
-	.print("Ligar");
-	.send(actuatorAgent,achieve,turnOnLight).
++!command1 : true <-
+	act(command1).
 	
-+luminosity(Status) : Status <= 700 <-
-	.print("Desligar");
-	.send(actuatorAgent,achieve,turnOffLight).
-	
++!command2 : true <-
+	act(command2).
+		
++!command3 : true <-
+	act(command3).
+		
++!command4 : true <-
+	act(command4).
+
 { include("$jacamoJar/templates/common-cartago.asl") }
 { include("$jacamoJar/templates/common-moise.asl") }
 

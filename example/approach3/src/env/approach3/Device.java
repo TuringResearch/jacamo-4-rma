@@ -1,13 +1,12 @@
-// CArtAgO artifact code for project approach2
+package approach3;
 
-package approach2;
+import java.util.ArrayList;
 
 import cartago.*;
 
 public class Device extends PhysicalArtifact {
 	void init() {
-		defineObsProperty("resource1", 0);
-		defineObsProperty("resource2", 0);
+		enableIoT(System.getProperty("user.dir") + "\\src\\env\\approach3", "127.0.0.1", 5500);
 	}
 	
 	@Override
@@ -28,8 +27,7 @@ public class Device extends PhysicalArtifact {
 
 	@Override
 	public void onIoTAction(String arg0) {
-		// TODO Auto-generated method stub
-		
+		act(arg0);
 	}
 }
 
