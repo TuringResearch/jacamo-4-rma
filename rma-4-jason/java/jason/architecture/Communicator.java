@@ -161,15 +161,19 @@ public class Communicator extends AgArch implements NodeConnectionListener {
      */
     @Override
     public void connected(NodeConnection nodeConnection) {
-        Message message = new ApplicationMessage();
-        message.setContentObject(ServiceManager.getInstance().jsonService.toJson(this.device));
-        try {
-            connection.sendMessage(message);
+        new Thread(() -> {
+            String msg = ServiceManager.getInstance().jsonService.toJson(this.device);
+            Message message = new ApplicationMessage();
+            message.setContentObject(msg);
+            try {
+                nodeConnection.sendMessage(message);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
             // TODO Log here for the TIME CONNECTION SEND
             this.connected = true;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        }).start();
     }
 
     /**
