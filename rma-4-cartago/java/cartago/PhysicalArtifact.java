@@ -96,7 +96,7 @@ public abstract class PhysicalArtifact extends Artifact {
             String[] datas = result.replace(")", "").split("\\(");
             ObsProperty prop = getObsProperty(datas[0]);
             if (prop != null) {
-                prop.updateValue(Integer.parseInt(datas[1]));
+                prop.updateValue(datas[1]);
             } else {
                 defineObsProperty(datas[0], datas[1]);
             }
