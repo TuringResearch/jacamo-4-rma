@@ -5,21 +5,7 @@
 
 /* Plans */
 +!start : true <- 
-	percepts;
-	//.wait(1000);
-	!start.
-	
-+!command1 : true <-
-	act(command1).
-	
-+!command2 : true <-
-	act(command2).
-		
-+!command3 : true <-
-	act(command3).
-		
-+!command4 : true <-
-	act(command4).
+	.print("Starting sample_agent").
 
 { include("$jacamoJar/templates/common-cartago.asl") }
 { include("$jacamoJar/templates/common-moise.asl") }

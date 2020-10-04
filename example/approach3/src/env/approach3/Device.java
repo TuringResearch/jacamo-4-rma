@@ -24,10 +24,5 @@ public class Device extends PhysicalArtifact {
 	protected int defineWaitTimeout() {
 		return 1000;
 	}
-
-	@Override
-	public void onIoTAction(String arg0) {
-		act(arg0);
-	}
 }
 
