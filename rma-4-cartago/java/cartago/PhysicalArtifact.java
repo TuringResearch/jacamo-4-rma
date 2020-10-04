@@ -43,8 +43,6 @@ public abstract class PhysicalArtifact extends Artifact {
 
     protected abstract int defineWaitTimeout();
 
-    public abstract void onIoTAction(String command);
-
     public void enableIoT(String deviceConfigFolder, String gatewayIP, int gatewayPort) {
         try {
             String configFilePath = new File(deviceConfigFolder).getPath() + File.separator
@@ -53,19 +51,22 @@ public abstract class PhysicalArtifact extends Artifact {
             this.ioTObject = new IoTObject(artifactDevice) {
                 @Override
                 protected void onAction(Action action) {
-                    PhysicalArtifact.this.onIoTAction(action.getCommand());
+                    PhysicalArtifact.this.act(action.getCommand());
                 }
 
                 @Override
                 protected ArrayList<Data> buildDataBuffer() {
+                    LocalDateTime now = LocalDateTime.now();
+                    String[] results = requestData();
                     ArrayList<Data> dataList = new ArrayList<Data>();
-
-                    // Removendo o último SPLIT_VALUE de cada recurso.
-                    final LocalDateTime now = LocalDateTime.now();
-                    for (Resource r : this.getDevice().getResourceList()) {
-                        if (getObsProperty(r.getResourceName()) != null) {
-                            String value = getObsProperty(r.getResourceName()).stringValue();
-                            dataList.add(new Data(now, this.getDevice().getDeviceName(), r.getResourceName(), value));
+                    for (String result : results) {
+                        String[] datas = result.replace(")", "").split("\\(");
+                        final Resource resource = this.getDevice().getResourceList().stream().filter(
+                                resource1 -> resource1.getResourceName().equals(datas[0])).findFirst().orElse(null);
+                        if (resource != null) {
+                            String value = datas[1];
+                            dataList.add(new Data(now, this.getDevice().getDeviceName(), resource.getResourceName(), value));
+                            PhysicalArtifact.this.setObsProperties(datas);
                         }
                     }
 
@@ -79,8 +80,16 @@ public abstract class PhysicalArtifact extends Artifact {
         }
     }
 
-    @OPERATION
-    public void percepts() {
+    private void setObsProperties(String[] datas) {
+        ObsProperty prop = getObsProperty(datas[0]);
+        if (prop != null) {
+            prop.updateValue(datas[1]);
+        } else {
+            defineObsProperty(datas[0], datas[1]);
+        }
+    }
+
+    private String[] requestData() {
         while (javinoIsBusy) {
             try {
                 Thread.sleep(10);
@@ -89,17 +98,21 @@ public abstract class PhysicalArtifact extends Artifact {
         }
         javinoIsBusy = true;
         boolean hasData = this.javino.requestData(this.port, "getPercepts");
-        String[] results = hasData ? this.javino.getData().split(";") : new String[]{};
         javinoIsBusy = false;
+        return hasData ? this.javino.getData().split(";") : new String[]{};
+    }
 
+
+    @OPERATION
+    public void percepts() {
+        if (this.ioTObject != null) {
+            log("The percepts operation does not produce effect because this artifact is an IoT Object");
+            return;
+        }
+        String[] results = requestData();
         for (String result : results) {
             String[] datas = result.replace(")", "").split("\\(");
-            ObsProperty prop = getObsProperty(datas[0]);
-            if (prop != null) {
-                prop.updateValue(datas[1]);
-            } else {
-                defineObsProperty(datas[0], datas[1]);
-            }
+            setObsProperties(datas);
         }
     }
 
