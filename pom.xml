@@ -10,8 +10,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>rma-4-cartago</module>
-        <module>rma-4-jason</module>
+        <module>cartago-4-rma</module>
+        <module>jason-4-rma</module>
         <module>distribution</module>
     </modules>
 
