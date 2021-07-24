@@ -1,4 +1,4 @@
-# RMA-4-JaCaMo
+# JaCaMo-4-RMA
 
 ## Tests
 
