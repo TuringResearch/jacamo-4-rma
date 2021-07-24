@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>br.pro.turing</groupId>
-    <artifactId>rma-4-jacamo</artifactId>
+    <artifactId>jacamo-4-rma</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
