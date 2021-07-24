@@ -6,8 +6,7 @@ import cartago.*;
 
 public class Device extends PhysicalArtifact {
 	void init() {
-		defineObsProperty("resource1", 0);
-		defineObsProperty("resource2", 0);
+		defineObsProperty("light", "");
 	}
 	
 	@Override
@@ -18,7 +17,7 @@ public class Device extends PhysicalArtifact {
 	@Override
 	protected String definePort() {
 		// TODO Auto-generated method stub
-		return "COM6";
+		return "COM3";
 	}
 
 	@Override

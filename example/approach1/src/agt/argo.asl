@@ -13,16 +13,16 @@
 	.percepts(open).
 
 +resource1(T) : T = 0 <-
-	.send(communicator, tell, resource1(Off)).
+	.nsend(communicator, tell, resource1(Off)).
 	
 +resource1(T) : T = 1 <-
-	.send(communicator, tell, resource1(On)).
+	.nsend(communicator, tell, resource1(On)).
 	
 +resource2(T) : T = 0 <-
-	.send(communicator, tell, resource2(Off)).
+	.nsend(communicator, tell, resource2(Off)).
 	
 +resource2(T) : T = 1 <-
-	.send(communicator, tell, resource2(On)).
+	.nsend(communicator, tell, resource2(On)).
 
 +!command1 : true <-
 	.print("Running the command 1.");

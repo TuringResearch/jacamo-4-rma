@@ -11,10 +11,13 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.logging.Logger;
 
 public abstract class PhysicalArtifact extends Artifact {
 
-    private Javino javino;
+    Logger logger = Logger.getLogger("physicalArtifact");
+//    private Javino javino;
 
     private String port;
 
@@ -28,7 +31,7 @@ public abstract class PhysicalArtifact extends Artifact {
 
     public PhysicalArtifact() {
         super();
-        this.javino = new Javino();
+//        this.javino = new Javino();
         this.port = definePort();
         if (this.port == null) {
             this.port = "";
@@ -97,9 +100,15 @@ public abstract class PhysicalArtifact extends Artifact {
             }
         }
         javinoIsBusy = true;
-        boolean hasData = this.javino.requestData(this.port, "getPercepts");
+//        boolean hasData = this.javino.requestData(this.port, "getPercepts");
         javinoIsBusy = false;
-        return hasData ? this.javino.getData().split(";") : new String[]{};
+        String luzValor = new Random().nextBoolean() ? "withLight" : "noLight";
+        final int i = new Random().nextInt(4);
+        String umidadeValor = i == 0 ? "dry" : i == 1 ? "wet" : "ideal";
+        String rwPercepts =
+                "light(" + luzValor + ");";
+        String[] perception = rwPercepts.split(";");
+        return perception;
     }
 
 
@@ -110,9 +119,11 @@ public abstract class PhysicalArtifact extends Artifact {
             return;
         }
         String[] results = requestData();
+        logger.info(";Percept;in;" + System.nanoTime());
         for (String result : results) {
             String[] datas = result.replace(")", "").split("\\(");
             setObsProperties(datas);
+            logger.info(";Percept;out;" + System.nanoTime());
         }
     }
 
@@ -126,14 +137,14 @@ public abstract class PhysicalArtifact extends Artifact {
         }
         javinoIsBusy = true;
         int failureCount = 0;
-        while (!this.javino.sendCommand(this.port, message) && failureCount < this.attemptsAfterFailure) {
-            try {
-                Thread.sleep(this.waitTimeout);
-                failureCount++;
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+//        while (!this.javino.sendCommand(this.port, message) && failureCount < this.attemptsAfterFailure) {
+//            try {
+//                Thread.sleep(this.waitTimeout);
+//                failureCount++;
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
         javinoIsBusy = false;
     }
 }

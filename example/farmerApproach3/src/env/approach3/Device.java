@@ -1,13 +1,10 @@
-// CArtAgO artifact code for project approach2
-
-package approach2;
+package approach3;
 
 import cartago.*;
 
 public class Device extends PhysicalArtifact {
 	void init() {
-		defineObsProperty("resource1", 0);
-		defineObsProperty("resource2", 0);
+		enableIoT(System.getProperty("user.dir") + "\\src\\env\\approach3", "127.0.0.1", 5500);
 	}
 	
 	@Override
@@ -18,12 +15,13 @@ public class Device extends PhysicalArtifact {
 	@Override
 	protected String definePort() {
 		// TODO Auto-generated method stub
-		return "COM6";
+		return "COM3";
 	}
 
 	@Override
 	protected int defineWaitTimeout() {
 		return 1000;
 	}
+
 }
 

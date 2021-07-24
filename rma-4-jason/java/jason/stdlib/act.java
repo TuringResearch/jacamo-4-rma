@@ -22,11 +22,11 @@ public class act extends DefaultInternalAction {
         final Argo argoArch = Argo.getArgoArch(ts.getUserAgArch());
         if (argoArch != null) {
             Term action = args[0];
-            if (argoArch.getJavino().sendCommand(argoArch.getPort(), action.toString())) {
+//            if (argoArch.getJavino().sendCommand(argoArch.getPort(), action.toString())) {
                 return true;
-            } else {
-                return false;
-            }
+//            } else {
+//                return false;
+//            }
         } else {
             ts.getLogger().warning(
                     "Was not possible to call .act internal action because this AgArch is not an Argo.");

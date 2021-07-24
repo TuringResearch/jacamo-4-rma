@@ -1,0 +1,58 @@
+{
+  "deviceName": "farmer",
+  "name": "Farmer",
+  "description": "Farmer's device'",
+  "cycleDelayInMillis": 1000,
+  "resourceList": [
+    {
+      "resourceName": "irrigator",
+      "name": "irrigator 1",
+      "description": "This is the Irrigator 1",
+      "port": "COM3",
+      "dataUnit": "",
+      "waitTimeInMillis": 1000,
+      "commandList": [
+        {
+          "command": "ON",
+          "description": "Irrigator is working"
+        },
+        {
+          "command": "OFF",
+          "description": "Irrigator is not working"
+        }
+      ]
+    },
+    {
+      "resourceName": "light",
+      "name": "light",
+      "description": "This is the light sensor",
+      "port": "COM3",
+      "dataUnit": "",
+      "waitTimeInMillis": 1000
+    },
+    {
+      "resourceName": "humidity",
+      "name": "humidity",
+      "description": "This is the humidity sensor",
+      "port": "COM3",
+      "dataUnit": "",
+      "waitTimeInMillis": 1000
+    },
+    {
+      "resourceName": "temperature",
+      "name": "temperature",
+      "description": "This is the temperature sensor",
+      "port": "COM3",
+      "dataUnit": "�C",
+      "waitTimeInMillis": 1000
+    },
+    {
+      "resourceName": "pH",
+      "name": "pH",
+      "description": "This is the humidity sensor",
+      "port": "COM3",
+      "dataUnit": "pH",
+      "waitTimeInMillis": 1000
+    }
+  ]
+}

@@ -2,16 +2,18 @@ package jason.architecture;
 
 import br.pro.turing.javino.Javino;
 import jason.asSyntax.Literal;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 
 public class Argo extends AgArch {
-
     public static final String DEFAULT_PORT = "COM1";
 
-    public Javino javino = new Javino();
+//    public Javino javino = new Javino();
 
     private String port = "";
 
@@ -37,6 +39,8 @@ public class Argo extends AgArch {
         this.setPort(DEFAULT_PORT);
     }
 
+    int c = 0;
+
     @Override
     public Collection<Literal> perceive() {
         long perceiving = System.nanoTime();
@@ -44,23 +48,29 @@ public class Argo extends AgArch {
         if (((perceiving - this.lastPerceived) < this.limit) || this.blocked) {
             return null;
         }
+        blocked = true;
         this.lastPerceived = perceiving;
 
-        int cont;
+        getTS().getLogger().info(";Percept;" + System.nanoTime());
         List<Literal> jPercept = new ArrayList<Literal>();
-        if (this.javino.requestData(this.port, "getPercepts")) {
-            String rwPercepts = this.javino.getData();
-            String[] perception = rwPercepts.split(";");
-            for (cont = 0; cont < perception.length; cont++) {
-                jPercept.add(Literal.parseLiteral(perception[cont]));
-            }
+
+
+        String luzValor = new Random().nextBoolean() ? "withLight" : "noLight";
+        final int i = new Random().nextInt(4);
+        String umidadeValor = i == 0 ? "dry" : i == 1 ? "wet" : "ideal";
+        String rwPercepts =
+                "light(" + (c++) + ");";
+        String[] perception = rwPercepts.split(";");
+        int cont;
+        for (cont = 0; cont < perception.length; cont++) {
+            jPercept.add(Literal.parseLiteral(perception[cont]));
         }
         return jPercept;
     }
 
-    public Javino getJavino() {
-        return this.javino;
-    }
+//    public Javino getJavino() {
+//        return this.javino;
+//    }
 
     public String getPort() {
         return port;

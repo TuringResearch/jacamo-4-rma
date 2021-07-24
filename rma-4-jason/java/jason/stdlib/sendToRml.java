@@ -9,6 +9,8 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Term;
 import jason.bb.BeliefBase;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -31,6 +33,7 @@ public class sendToRml extends DefaultInternalAction {
         super.execute(ts, un, args);
         Communicator communicator = Communicator.getCommunicatorArch(ts.getUserAgArch());
         if (communicator != null) {
+            ts.getLogger().info(";SendToRML;in;" + System.nanoTime());
             Map<Resource, Data> resourceLiteralMap = new HashMap<>();
             final BeliefBase bb = ts.getAg().getBB();
 
@@ -64,6 +67,7 @@ public class sendToRml extends DefaultInternalAction {
                 resourceLiteralMap.forEach((resource, data) -> {
                     communicator.sendToRml(data);
                 });
+                ts.getLogger().info(";SendToRML;out;" + System.nanoTime());
             }
             return true;
         } else {

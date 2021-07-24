@@ -36,6 +36,11 @@
             <artifactId>devicelayer</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.12.1</version>
+        </dependency>
     </dependencies>
 
     <repositories>
