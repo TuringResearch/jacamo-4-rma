@@ -21,7 +21,7 @@
 
     <fileSets>
         <fileSet>
-            <directory>${basedir}/../rma-4-jason/target/lib</directory>
+            <directory>${basedir}/../jason-4-rma/target/lib</directory>
             <outputDirectory>/</outputDirectory>
             <excludes>
                 <exclude>cartago-2.4.jar</exclude>
@@ -29,7 +29,7 @@
             </excludes>
         </fileSet>
         <fileSet>
-            <directory>${basedir}/../rma-4-cartago/target/lib</directory>
+            <directory>${basedir}/../cartago-4-rma/target/lib</directory>
             <outputDirectory>/</outputDirectory>
             <excludes>
                 <exclude>cartago-2.4.jar</exclude>
