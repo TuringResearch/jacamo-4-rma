@@ -12,8 +12,11 @@ JaCaMo-4-RMA is an extension of JaCaMo including ARGO Agent, Comunicator Agent a
     - 'mvn clean package'
 
 - In 'distribution\target' path, unzip the 'rma-4-jacamo-1.0.0.zip' file in jacamo 0.8 lib path.
+- If your Eclipse IDE is able to run JaCaMo projects, you are able to use JaCaMo-4-RMA.
 
 ## Tests
+
+You can reproduce the test case in the branch 'test'.
 
 ### Refactored RMA Test
 - [Link for the Refactored RMA Test data](https://1drv.ms/u/s!Apwc_y184sz-9C3pRWKslHtlsa0z?e=kqGafq)
