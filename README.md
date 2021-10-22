@@ -13,7 +13,7 @@ MAS in a Resource Management Architecture (RMA). This is for Jason 2.4 and CArtA
 
 - In 'distribution\target' path, unzip the 'rma-4-jacamo-1.0.0.zip' file in jacamo 0.8 lib path.
 - If your Eclipse IDE is able to run JaCaMo projects, you are able to use JaCaMo-4-RMA.
-
+- The RMA server can be configured following the README in [this link](https://github.com/TuringResearch/rma-Java)
 ## Tests
 
 ### Refactored RMA Test
