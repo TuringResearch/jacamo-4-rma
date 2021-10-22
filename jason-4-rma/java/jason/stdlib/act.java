@@ -18,19 +18,20 @@ public class act extends DefaultInternalAction {
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-
-        final Argo argoArch = Argo.getArgoArch(ts.getUserAgArch());
-        if (argoArch != null) {
-            Term action = args[0];
-            if (argoArch.getJavino().sendCommand(argoArch.getPort(), action.toString())) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            ts.getLogger().warning(
-                    "Was not possible to call .act internal action because this AgArch is not an Argo.");
-            return false;
-        }
+        ts.getLogger().info(args[0].toString());
+        return true;
+//        final Argo argoArch = Argo.getArgoArch(ts.getUserAgArch());
+//        if (argoArch != null) {
+//            Term action = args[0];
+//            if (argoArch.getJavino().sendCommand(argoArch.getPort(), action.toString())) {
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        } else {
+//            ts.getLogger().warning(
+//                    "Was not possible to call .act internal action because this AgArch is not an Argo.");
+//            return false;
+//        }
     }
 }
