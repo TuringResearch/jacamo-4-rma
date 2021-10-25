@@ -58,25 +58,20 @@ irrigator(off).
 	.
 +!pH : ph > 5.8 <-
 	.send(communicator, tell, pH(ph_level_too_High))
-	!pH;
-	.
+	!pH.
 -!pH <-
-	!pH;
-	.
+	!pH.
 	
 
 // irrigate
 +!irrigate : (temperature >= 35 | humidity(dry) | action.isAfternon) & action.isRaining == false & irrigator(off) <-
 	!on;
-	!irrigate;
-	.
+	!irrigate.
 +!irrigate : (temperature <= 10 | humidity(wet) | action.isRaining) & irrigator(on) <-
 	!off;
-	!irrigate;
-	.
+	!irrigate.
 -!irrigate <-
-	!irrigate;
-	.
+	!irrigate.
 	
 	
 // on 
@@ -85,8 +80,7 @@ irrigator(off).
 	.send(argo, achieve, on);
 	.send(communicator, tell, irrigator(on));
 	-irrigator(off);
-	+irrigator(on);
-	.
+	+irrigator(on).
 	
 // off 
 +!off : true <-
@@ -94,8 +88,7 @@ irrigator(off).
 	.send(argo, achieve, off);
 	.send(communicator, tell, irrigator(off));
 	-irrigator(on);
-	+irrigator(off);
-	.
+	+irrigator(off).
 	
 { include("$jacamoJar/templates/common-cartago.asl") }
 { include("$jacamoJar/templates/common-moise.asl") }

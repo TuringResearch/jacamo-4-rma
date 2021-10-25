@@ -10,42 +10,37 @@
 
 +!start : true <- 
 	.port(COM3);
-	.percepts(open);
-	.
+	.percepts(open).
 
 +light(T) <-
 	.percepts(block);
 	.send(mediator, tell, light(T));
-	.percepts(open);
-	.
+	.percepts(open).
 	
 +humidity(T) <-
 	.percepts(block);
 	.send(mediator, tell, humidity(T));
-	.percepts(open);
-	.
+	.percepts(open).
 
 +temperature(T) <-
 	.percepts(block);
 	.send(mediator, tell, temperature(T));
-	.percepts(open);
-	.
+	.percepts(open).
 
 +pH(T) <-
 	.percepts(block);
 	.send(mediator, tell, pH(T));
-	.percepts(open);
-	.
+	.percepts(open).
 
 +!on : true <-
 	.print("Turning irrigator ON.");
-	.act(ON);
+	.act(on);
 	.wait(1000);
 	!off.
 	
 +!off : true <-
 	.print("Turning irrigator OFF.");
-	.act(OFF).
+	.act(off).
 
 { include("$jacamoJar/templates/common-cartago.asl") }
 { include("$jacamoJar/templates/common-moise.asl") }
