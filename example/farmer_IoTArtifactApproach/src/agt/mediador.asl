@@ -21,14 +21,12 @@ irrigator(off).
 // on 
 +!on : true <-
 	act(on);
-	.send(communicator, tell, irrigator(on));
 	-irrigator(off);
 	+irrigator(on).
 	
 // off 
 +!off : true <-
 	act(off);
-	.send(communicator, tell, irrigator(off));
 	-irrigator(on);
 	+irrigator(off).
 	
