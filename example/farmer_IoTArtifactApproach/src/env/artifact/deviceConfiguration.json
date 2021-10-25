@@ -43,7 +43,7 @@
       "name": "temperature",
       "description": "This is the temperature sensor",
       "port": "COM3",
-      "dataUnit": "�C",
+      "dataUnit": "ºC",
       "waitTimeInMillis": 5000
     },
     {
