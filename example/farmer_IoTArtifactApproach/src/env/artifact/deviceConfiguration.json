@@ -13,11 +13,11 @@
       "waitTimeInMillis": 5000,
       "commandList": [
         {
-          "command": "ON",
+          "command": "on",
           "description": "Irrigator is working"
         },
         {
-          "command": "OFF",
+          "command": "off",
           "description": "Irrigator is not working"
         }
       ]
@@ -43,7 +43,7 @@
       "name": "temperature",
       "description": "This is the temperature sensor",
       "port": "COM3",
-      "dataUnit": "°C",
+      "dataUnit": "ï¿½C",
       "waitTimeInMillis": 5000
     },
     {
