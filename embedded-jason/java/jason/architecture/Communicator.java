@@ -1,7 +1,6 @@
 package jason.architecture;
 
 import br.pro.turing.rma.core.model.Action;
-import br.pro.turing.rma.core.model.Data;
 import br.pro.turing.rma.core.model.Device;
 import br.pro.turing.rma.core.service.ServiceManager;
 import jason.asSyntax.Plan;
@@ -12,13 +11,13 @@ import lac.cnclib.sddl.message.ApplicationMessage;
 import lac.cnclib.sddl.message.Message;
 import lac.cnclib.sddl.serialization.Serialization;
 
-import java.io.*;
-import java.net.InetSocketAddress;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.net.SocketAddress;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class Communicator extends AgArch implements NodeConnectionListener {
 
@@ -28,100 +27,10 @@ public class Communicator extends AgArch implements NodeConnectionListener {
     /** Model of IoT objects. */
     private Device device;
 
-    /** IP socket address of the ContextNet gateway. */
-    private InetSocketAddress gatewayAddress;
-
     /** State of connection. */
     private boolean connected = false;
 
-    /**
-     * Builds a device given a device configuration file.
-     *
-     * @param deviceConfigurationFilePath Device configuration file.
-     * @return Device.
-     */
-    public static Device buildDeviceByConfigFile(String deviceConfigurationFilePath) throws FileNotFoundException {
-        Reader jsonFile = new FileReader(deviceConfigurationFilePath);
-        return ServiceManager.getInstance().jsonService.fromJson(jsonFile, Device.class);
-    }
-
-    public static Communicator getCommunicatorArch(AgArch currentArch) {
-        if (currentArch == null) {
-            return null;
-        }
-        if (currentArch instanceof Communicator) {
-            return (Communicator) currentArch;
-        }
-        return getCommunicatorArch(currentArch.getNextAgArch());
-    }
-
-    /**
-     * Search by an UUID if exists.
-     *
-     * @return UUID or empty text.
-     */
-    private String getUUIDFromFile() throws IOException {
-        File file = new File(".device");
-        if (!file.exists()) {
-            return "";
-        }
-
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(file);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            final String uuid;
-            uuid = bufferedReader.readLine();
-            return uuid;
-        } finally {
-            inputStream.close();
-        }
-    }
-
-    /**
-     * Create a file if not exists and write a new UUID value.
-     *
-     * @param uuid UUID.
-     * @throws IOException
-     */
-    private void setUUIDToFile(String uuid) throws IOException {
-        File file = new File(".device");
-        if (!file.exists()) {
-            Files.createFile(file.toPath());
-        }
-        FileWriter writer = new FileWriter(".device");
-        writer.write(uuid);
-        writer.close();
-    }
-
-    /**
-     * Connects to the RML.
-     *
-     * @param gatewayIP   Gateway IP.
-     * @param gatewayPort Gateway port.
-     */
-    public void connect(String gatewayIP, int gatewayPort) throws IOException {
-        this.gatewayAddress = new InetSocketAddress(gatewayIP, gatewayPort);
-        final String uuid = this.getUUIDFromFile();
-        connection = uuid.isEmpty() ? new MrUdpNodeConnection() : new MrUdpNodeConnection(UUID.fromString(uuid));
-        connection.addNodeConnectionListener(this);
-
-        connection.connect(gatewayAddress);
-    }
-
-    public void sendToRml(Data data) {
-        if (this.connected && data != null) {
-            ArrayList<Data> dataList = new ArrayList<>();
-            dataList.add(data);
-            Message message = new ApplicationMessage();
-            message.setContentObject(ServiceManager.getInstance().jsonService.toJson(dataList));
-            try {
-                connection.sendMessage(message);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    private final List<String> nameAgents = new ArrayList<>();
 
     private void onAction(Action action) {
         // TODO transformar em chamada de plano.
@@ -148,9 +57,11 @@ public class Communicator extends AgArch implements NodeConnectionListener {
         File deviceConfigFile = new File(deviceConfigFilePath);
         if (!deviceConfigFile.exists()) {
             this.getTS().getLogger().severe("deviceConfiguration.json not found in '" + aslFile.getParent() + "'.");
+            return;
         }
 
-        this.device = buildDeviceByConfigFile(deviceConfigFile.getPath());
+        Reader jsonFile = new FileReader(deviceConfigFile.getPath());
+        this.device = ServiceManager.getInstance().jsonService.fromJson(jsonFile, Device.class);
     }
 
     /**
@@ -186,21 +97,22 @@ public class Communicator extends AgArch implements NodeConnectionListener {
      */
     @Override
     public final void newMessageReceived(NodeConnection nodeConnection, Message message) {
-        String messageReceived = (String) Serialization.fromJavaByteStream(message.getContent());
-        if (ServiceManager.getInstance().jsonService.jasonIsObject(messageReceived, Device.class.getName())) {
+        String receivedMessage = (String) Serialization.fromJavaByteStream(message.getContent());
+        if (ServiceManager.getInstance().jsonService.jasonIsObject(receivedMessage, Device.class.getName())) {
             // TODO Log here for the TIME CONNECTION RECEIVE
-            this.device = ServiceManager.getInstance().jsonService.fromJson(messageReceived, Device.class);
+            this.device = ServiceManager.getInstance().jsonService.fromJson(receivedMessage, Device.class);
             try {
-                if (this.getUUIDFromFile().isEmpty()) {
-                    this.setUUIDToFile(this.device.getUUID());
+                if (CommunicatorUtils.getUUIDFromFile().isEmpty()) {
+                    CommunicatorUtils.setUUIDToFile(this.device.getUUID());
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else if (ServiceManager.getInstance().jsonService.jasonIsObject(messageReceived, Action.class.getName())) {
-            Action action = ServiceManager.getInstance().jsonService.fromJson(messageReceived, Action.class);
+        } else if (ServiceManager.getInstance().jsonService.jasonIsObject(receivedMessage, Action.class.getName())) {
+            Action action = ServiceManager.getInstance().jsonService.fromJson(receivedMessage, Action.class);
             this.onAction(action);
-        }
+            // todo parei aqui. Precisa tipar a mensagem contextNet para conciliar RML com Contextnet comum. O protocolo de predação deve ser um comunicador estendido.
+        } else if (ServiceManager.getInstance().jsonService.fromJson(receivedMessage, Communication))
     }
 
     /**
@@ -259,5 +171,30 @@ public class Communicator extends AgArch implements NodeConnectionListener {
      */
     public Device getDevice() {
         return this.device;
+    }
+
+    /**
+     * @param connection {@link #connection}
+     */
+    public void setConnection(MrUdpNodeConnection connection) {
+        this.connection = connection;
+    }
+
+    /**
+     * @return {@link #connection}
+     */
+    public MrUdpNodeConnection getConnection() {
+        return this.connection;
+    }
+
+    /**
+     * @return {@link #connected}
+     */
+    public boolean isConnected() {
+        return this.connected;
+    }
+
+    public List<String> getNameAgents() {
+        return this.nameAgents;
     }
 }

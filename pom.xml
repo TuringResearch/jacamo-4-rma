@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>br.pro.turing</groupId>
-    <artifactId>jacamo-4-rma</artifactId>
+    <artifactId>embedded-jacamo</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
     <modules>
-        <module>cartago-4-rma</module>
-        <module>jason-4-rma</module>
+        <module>embedded-cartago</module>
+        <module>embedded-jason</module>
         <module>distribution</module>
     </modules>
 

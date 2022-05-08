@@ -3,18 +3,40 @@ package jason.stdlib;
 import br.pro.turing.rma.core.model.Data;
 import br.pro.turing.rma.core.model.Device;
 import br.pro.turing.rma.core.model.Resource;
+import br.pro.turing.rma.core.service.ServiceManager;
+import jason.architecture.AgArch;
 import jason.architecture.Communicator;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Term;
 import jason.bb.BeliefBase;
+import lac.cnclib.sddl.message.ApplicationMessage;
+import lac.cnclib.sddl.message.Message;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static jason.architecture.CommunicatorUtils.getCommunicatorArch;
+
 public class sendToRml extends DefaultInternalAction {
+
+    private void sendDataToRml(Communicator communicator, Data data) {
+        if (communicator.isConnected() && data != null) {
+            ArrayList<Data> dataList = new ArrayList<>();
+            dataList.add(data);
+            Message message = new ApplicationMessage();
+            message.setContentObject(ServiceManager.getInstance().jsonService.toJson(dataList));
+            try {
+                communicator.getConnection().sendMessage(message);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     @Override
     public int getMinArgs() {
@@ -29,7 +51,7 @@ public class sendToRml extends DefaultInternalAction {
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         super.execute(ts, un, args);
-        Communicator communicator = Communicator.getCommunicatorArch(ts.getUserAgArch());
+        Communicator communicator = getCommunicatorArch(ts.getUserAgArch());
         if (communicator != null) {
             Map<Resource, Data> resourceLiteralMap = new HashMap<>();
             final BeliefBase bb = ts.getAg().getBB();
@@ -62,7 +84,7 @@ public class sendToRml extends DefaultInternalAction {
                 ts.getLogger().warning("[sentToRml] No beliefs is a Resource's Data.");
             } else if (!resourceLiteralMap.isEmpty()) {
                 resourceLiteralMap.forEach((resource, data) -> {
-                    communicator.sendToRml(data);
+                    this.sendDataToRml(communicator, data);
                 });
             }
             return true;
