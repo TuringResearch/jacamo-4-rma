@@ -131,13 +131,13 @@ public class CommMiddleware implements NodeConnectionListener {
 
                 // Após coletar o primeira parâmetro, será possível interpretar a mensagem. Os protocolos de
                 // transferência de agentes são tratados da mesma maneira. Já os demais terão uma lógica específica.
-                if (firstParam.equals(TransportAgentMessageType.PREDATOR.getName()) || firstParam.equals(
-                        TransportAgentMessageType.INQUILINISM.getName()) || firstParam.equals(
-                        TransportAgentMessageType.MUTUALISM.getName())) {
+                if (firstParam.equals(EcologicalRelationType.PREDATOR.getName()) || firstParam.equals(
+                        EcologicalRelationType.INQUILINISM.getName()) || firstParam.equals(
+                        EcologicalRelationType.MUTUALISM.getName())) {
                     this.protocol = firstParam;
                     treatAgentTransferenceMsg(msg);
-                } else if (firstParam.equals(TransportAgentMessageType.CAN_TRANSFER.getName()) || firstParam.equals(
-                        TransportAgentMessageType.CAN_KILL.getName())) {
+                } else if (firstParam.equals(EcologicalRelationType.CAN_TRANSFER.getName()) || firstParam.equals(
+                        EcologicalRelationType.CAN_KILL.getName())) {
                     this.replySentAboutTransfer = firstParam;
                 } else {
                     treatSendOutMessage(firstParam, msg);
@@ -148,7 +148,7 @@ public class CommMiddleware implements NodeConnectionListener {
 
             // Verifica se há algo relacionado à transferência de agentes para responder a quem enviou a solicitação
             // de transferência de agentes.
-            if (TransportAgentMessageType.CAN_TRANSFER.getName().equals(this.answerToSendAboutTransfer)) {
+            if (EcologicalRelationType.CAN_TRANSFER.getName().equals(this.answerToSendAboutTransfer)) {
                 ApplicationMessage appMessage = new ApplicationMessage();
                 appMessage.setContentObject(prepareToSend(this.answerToSendAboutTransfer));
                 appMessage.setRecipientID(message.getSenderID());
@@ -158,7 +158,7 @@ public class CommMiddleware implements NodeConnectionListener {
                     e.printStackTrace();
                 }
             }
-            if (TransportAgentMessageType.CAN_TRANSFER.getName().equals(this.replySentAboutTransfer)) {
+            if (EcologicalRelationType.CAN_TRANSFER.getName().equals(this.replySentAboutTransfer)) {
                 Map<String, CentralisedAgArch> agentsOfTheSMA = RunCentralisedMAS.getRunner().getAgs();
                 ArrayList<AslTransferenceModel> aslTransferenceModelList = new ArrayList<AslTransferenceModel>();
                 int qtdAgents = 0;
@@ -187,7 +187,7 @@ public class CommMiddleware implements NodeConnectionListener {
                             + "agentes esperados para envio não foi satisfeita.");
                 }
             }
-            if (TransportAgentMessageType.CAN_KILL.getName().equals(this.replySentAboutTransfer)) {
+            if (EcologicalRelationType.CAN_KILL.getName().equals(this.replySentAboutTransfer)) {
                 //Deletar os arquivos ASL
                 Map<String, CentralisedAgArch> agentsOfTheSMA = RunCentralisedMAS.getRunner().getAgs();
                 for (CentralisedAgArch centralisedAgArch : agentsOfTheSMA.values()) {
@@ -221,7 +221,7 @@ public class CommMiddleware implements NodeConnectionListener {
 
             if (qtdAgentsReceived == this.nameAgents.size()) {
                 // Todos agentes recebidos com sucesso.
-                this.answerToSendAboutTransfer = TransportAgentMessageType.CAN_KILL.getName();
+                this.answerToSendAboutTransfer = EcologicalRelationType.CAN_KILL.getName();
                 this.senderUUID = message.getSenderID();
                 this.agentsReceived = aslTransferenceModelArrayList;
             } else {
@@ -261,7 +261,7 @@ public class CommMiddleware implements NodeConnectionListener {
 
     public boolean hasToKillMyAgents() {
         return this.replySentAboutTransfer != null && this.replySentAboutTransfer.length() > 0
-                && this.replySentAboutTransfer.equals(TransportAgentMessageType.CAN_KILL.getName());
+                && this.replySentAboutTransfer.equals(EcologicalRelationType.CAN_KILL.getName());
     }
 
     public void deleteFileAsl(File file) {
@@ -317,7 +317,7 @@ public class CommMiddleware implements NodeConnectionListener {
         }
         this.nameAgents.add(name);
 
-        this.answerToSendAboutTransfer = TransportAgentMessageType.CAN_TRANSFER.getName();
+        this.answerToSendAboutTransfer = EcologicalRelationType.CAN_TRANSFER.getName();
     }
 
     /**

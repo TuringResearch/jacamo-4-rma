@@ -1,9 +1,8 @@
 package jason;
 
-import jason.AslTransferenceModel;
 import jason.architecture.AgArch;
 import jason.architecture.CommMiddleware;
-import jason.architecture.TransportAgentMessageType;
+import jason.architecture.EcologicalRelationType;
 import jason.infra.centralised.CentralisedAgArch;
 import jason.infra.centralised.RunCentralisedMAS;
 import jason.mas2j.ClassParameters;
@@ -30,11 +29,11 @@ public class CommunicatorUltron extends AgArch {
 
     @Override
     public void instantiateAgents() {
-        if (this.commBridge.getProtocol().equals(TransportAgentMessageType.PREDATOR.getName())) {
+        if (this.commBridge.getProtocol().equals(EcologicalRelationType.PREDATOR.getName())) {
             this.executePredatorProtocol();
-        } else if (this.commBridge.getProtocol().equals(TransportAgentMessageType.MUTUALISM.getName())) {
+        } else if (this.commBridge.getProtocol().equals(EcologicalRelationType.MUTUALISM.getName())) {
             this.executeMutualismProtocol();
-        } else if (this.commBridge.getProtocol().equals(TransportAgentMessageType.INQUILINISM.getName())) {
+        } else if (this.commBridge.getProtocol().equals(EcologicalRelationType.INQUILINISM.getName())) {
             this.executeInquilinismProtocol();
         }
     }

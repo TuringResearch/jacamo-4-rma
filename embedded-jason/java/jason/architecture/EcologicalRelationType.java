@@ -3,7 +3,7 @@ package jason.architecture;
 /**
  * Tipos de protocolo de transferência de agentes entre SMA distintos.
  */
-public enum TransportAgentMessageType {
+public enum EcologicalRelationType {
     PREDATOR(1, "PREDATOR"),
     MUTUALISM(2, "MUTUALISM"),
     INQUILINISM(3, "INQUILINISM"),
@@ -14,7 +14,7 @@ public enum TransportAgentMessageType {
     int id;
     String name;
 
-    TransportAgentMessageType(int id, String name) {
+    EcologicalRelationType(int id, String name) {
         this.id = id;
         this.name = name;
     }
