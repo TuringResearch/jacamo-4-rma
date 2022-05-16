@@ -118,6 +118,7 @@ public class Communicator extends AgArch implements NodeConnectionListener {
         } else {
             proccessDefaultCommunicatorMessage(receivedMessage);
         }
+        //todo proximo passo: revisar recepcao de sendout (estamos realmente colocando as mensagens no checkmail?), revisar maneira de implementar um agArch
     }
 
     private void proccessDeviceMessage(String receivedMessage) {

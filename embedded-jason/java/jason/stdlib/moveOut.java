@@ -23,8 +23,14 @@
 
 package jason.stdlib;
 
+import br.pro.turing.rma.core.service.ServiceManager;
+import jason.AslFileGenerator;
+import jason.AslTransferenceModel;
 import jason.JasonException;
 import jason.architecture.Communicator;
+import jason.architecture.EcologicalRelationBuffer;
+import jason.architecture.EcologicalRelationType;
+import jason.architecture.TransferenceActionType;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.Message;
 import jason.asSemantics.TransitionSystem;
@@ -225,23 +231,51 @@ public class moveOut extends DefaultInternalAction {
                     "Was not possible to call .move_out internal action because this AgArch is not a Communicator.");
             return false;
         }
-        System.out.println("Tempo inicial:" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")));
         checkArguments(args);
-        String receiver = args[0].toString();
-        Term protocol = args[1];
-        if (args.length == 2) {
-            Map<String, CentralisedAgArch> agentsOfTheSMA = RunCentralisedMAS.getRunner().getAgs();
-            List<String> nameAgents = new ArrayList<String>();
 
-            for (CentralisedAgArch centralisedAgArch: agentsOfTheSMA.values()) {
-                nameAgents.add(centralisedAgArch.getUserAgArch().getAgName());
-            }
-            this.sendAllAgentsToContextNet(communicator, receiver, protocol, nameAgents);
-        } else {
-            Term agent = args[2];
-            this.sendAgentToContextNet(communicator, receiver, protocol, agent);
+        String receiver = args[0].toString();
+        EcologicalRelationBuffer ecologicalRelationBuffer = generateEcologicalRelationBuffer(args);
+
+        ApplicationMessage message = new ApplicationMessage();
+        message.setRecipientID(UUID.fromString(receiver.substring(1, receiver.length() - 1)));
+        message.setContentObject(ServiceManager.getInstance().jsonService.toJson(ecologicalRelationBuffer));
+        try {
+            communicator.getConnection().sendMessage(message);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return true;
+    }
+
+    private EcologicalRelationBuffer generateEcologicalRelationBuffer(Term[] args) {
+        EcologicalRelationType ecologicalRelationType = EcologicalRelationType.getByName(args[1].toString());
+        List<AslTransferenceModel> aslTransferenceModelList = new ArrayList<>();
+        AslFileGenerator aslFileGenerator = new AslFileGenerator();
+
+        if (args.length == 2) {
+            Map<String, CentralisedAgArch> agentsOfTheSMA = RunCentralisedMAS.getRunner().getAgs();
+            for (CentralisedAgArch centralisedAgArch : agentsOfTheSMA.values()) {
+                AslTransferenceModel aslTransferenceModel = aslFileGenerator.generateAslContent(centralisedAgArch.getUserAgArch());
+                aslTransferenceModelList.add(aslTransferenceModel);
+            }
+        } else {
+            for (int i = 2; i < args.length; i++) {
+                Term agent = args[i];
+                CentralisedAgArch agentOfTheSMA = RunCentralisedMAS.getRunner().getAg(agent.toString());
+                AslTransferenceModel aslTransferenceModel = aslFileGenerator.generateAslContent(agentOfTheSMA.getUserAgArch());
+                aslTransferenceModelList.add(aslTransferenceModel);
+            }
+        }
+
+        EcologicalRelationBuffer ecologicalRelationBuffer = new EcologicalRelationBuffer();
+        ecologicalRelationBuffer.setRelationType(ecologicalRelationType);
+        ecologicalRelationBuffer.setAgentsToGiveBirth(aslTransferenceModelList);
+        ecologicalRelationBuffer.setActionType(generateActionType(ecologicalRelationType));
+        return ecologicalRelationBuffer;
+    }
+
+    private TransferenceActionType generateActionType(EcologicalRelationType ecologicalRelationType) {
+        return EcologicalRelationType.PREDATOR.equals(ecologicalRelationType) ? TransferenceActionType.GIVE_BIRTH_AND_KILL : TransferenceActionType.GIVE_BIRTH;
     }
 }

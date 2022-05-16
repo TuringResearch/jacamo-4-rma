@@ -19,6 +19,15 @@ public enum EcologicalRelationType {
         this.name = name;
     }
 
+    public static EcologicalRelationType getByName(String name) {
+        for (EcologicalRelationType value : values()) {
+            if (value.name.equals(name.toUpperCase())) {
+                return value;
+            }
+        }
+        return null;
+    }
+
     public int getId() {
         return id;
     }
