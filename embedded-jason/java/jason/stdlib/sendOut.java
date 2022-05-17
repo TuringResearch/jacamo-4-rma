@@ -23,8 +23,9 @@
 
 package jason.stdlib;
 
+import br.pro.turing.rma.core.service.ServiceManager;
 import jason.JasonException;
-import jason.architecture.AgArch;
+import jason.architecture.CommMiddleware;
 import jason.architecture.Communicator;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.Message;
@@ -33,6 +34,7 @@ import jason.asSemantics.Unifier;
 import jason.asSyntax.StringTerm;
 import jason.asSyntax.Term;
 import lac.cnclib.sddl.message.ApplicationMessage;
+import protocol.communication.SimpleCommunicationBuffer;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -94,7 +96,7 @@ import static jason.architecture.CommunicatorUtils.*;
  * asynchronous ask since it does not suspend jomi's intention. If rafael has,
  * for instance, the literal <code>value(beer,2)</code> in its belief base, this
  * belief is automatically sent to jomi. Otherwise an event like
- * <code>+?value(beer,X)[source(self)]</code> is generated in rafael's side and
+ * <code>+?value(beer,X)[source(communicator)]</code> is generated in rafael's side and
  * the result of this query is then sent to jomi. In the jomi's side, the
  * rafael's answer is added in the jomi's belief base and an event like
  * <code>+value(beer,10)[source(rafael)]</code> is generated.</li>
@@ -132,7 +134,7 @@ public class sendOut extends DefaultInternalAction {
         } else {
             rec = to.toString();
         }
-        if (rec.equals("self")) {
+        if (rec.equals("communicator")) {
             rec = ts.getUserAgArch().getAgName();
         }
         //m.setReceiver(rec);
@@ -171,22 +173,17 @@ public class sendOut extends DefaultInternalAction {
         }
     }
 
-    private static String prepareToSend(String sender, String force, String msg) {
-        msg = COMMUNICATOR_PREAMBLE + int2hex(sender.length()) + sender + int2hex(force.length()) + force + int2hex(msg.length()) + msg;
-        return msg;
-    }
+    private SimpleCommunicationBuffer generateSimpleCommunicationBuffer(String receiver, Term[] args, Communicator communicator) {
+        Term illocutionaryForce = args[1];
+        Term message = args[2];
 
-    private void sendContextNetMessage(Communicator self, String receiverAgent, Term illocutionaryForce, Term message) {
-        if (self.isConnected()) {
-            ApplicationMessage applicationMessage = new ApplicationMessage();
-            applicationMessage.setContentObject(prepareToSend(self.getAgName(), illocutionaryForce.toString(), applicationMessage.toString()));
-            applicationMessage.setRecipientID(UUID.fromString(receiverAgent.substring(1, receiverAgent.length() - 1)));
-            try {
-                self.getConnection().sendMessage(applicationMessage);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        SimpleCommunicationBuffer simpleCommunicationBuffer = new SimpleCommunicationBuffer();
+        simpleCommunicationBuffer.setIlForce(illocutionaryForce.toString());
+        simpleCommunicationBuffer.setSender(communicator.getAgName());
+        simpleCommunicationBuffer.setReceiver(receiver);
+        simpleCommunicationBuffer.setContent(message.toString());
+
+        return simpleCommunicationBuffer;
     }
 
     @Override
@@ -198,10 +195,24 @@ public class sendOut extends DefaultInternalAction {
             return false;
         }
         checkArguments(args);
-        String receiverAgent = args[0].toString();
-        Term illocutionaryForce = args[1];
-        Term message = args[2];
-        this.sendContextNetMessage(communicator, receiverAgent, illocutionaryForce, message);
-        return true;
+
+
+        if (communicator.isConnected()) {
+            String receiver = args[0].toString();
+
+            SimpleCommunicationBuffer simpleCommunicationBuffer = generateSimpleCommunicationBuffer(receiver, args, communicator);
+
+            ApplicationMessage applicationMessage = new ApplicationMessage();
+            applicationMessage.setContentObject(ServiceManager.getInstance().jsonService.toJson(simpleCommunicationBuffer));
+            applicationMessage.setRecipientID(UUID.fromString(receiver.substring(1, receiver.length() - 1)));
+            try {
+                communicator.getConnection().sendMessage(applicationMessage);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
+
+        return false;
     }
 }

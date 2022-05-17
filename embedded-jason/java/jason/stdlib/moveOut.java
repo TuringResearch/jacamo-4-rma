@@ -24,13 +24,13 @@
 package jason.stdlib;
 
 import br.pro.turing.rma.core.service.ServiceManager;
-import jason.AslFileGenerator;
-import jason.AslTransferenceModel;
+import protocol.ecologicalrelation.AslFileGenerator;
+import protocol.ecologicalrelation.AslTransferenceModel;
 import jason.JasonException;
 import jason.architecture.Communicator;
-import jason.architecture.EcologicalRelationBuffer;
-import jason.architecture.EcologicalRelationType;
-import jason.architecture.TransferenceActionType;
+import protocol.ecologicalrelation.EcologicalRelationBuffer;
+import protocol.ecologicalrelation.EcologicalRelationType;
+import protocol.ecologicalrelation.TransferenceActionType;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.Message;
 import jason.asSemantics.TransitionSystem;
@@ -42,8 +42,6 @@ import jason.infra.centralised.RunCentralisedMAS;
 import lac.cnclib.sddl.message.ApplicationMessage;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -233,19 +231,22 @@ public class moveOut extends DefaultInternalAction {
         }
         checkArguments(args);
 
-        String receiver = args[0].toString();
-        EcologicalRelationBuffer ecologicalRelationBuffer = generateEcologicalRelationBuffer(args);
+        if (communicator.isConnected()) {
+            String receiver = args[0].toString();
+            EcologicalRelationBuffer ecologicalRelationBuffer = generateEcologicalRelationBuffer(args);
 
-        ApplicationMessage message = new ApplicationMessage();
-        message.setRecipientID(UUID.fromString(receiver.substring(1, receiver.length() - 1)));
-        message.setContentObject(ServiceManager.getInstance().jsonService.toJson(ecologicalRelationBuffer));
-        try {
-            communicator.getConnection().sendMessage(message);
-        } catch (IOException e) {
-            e.printStackTrace();
+            ApplicationMessage message = new ApplicationMessage();
+            message.setRecipientID(UUID.fromString(receiver.substring(1, receiver.length() - 1)));
+            message.setContentObject(ServiceManager.getInstance().jsonService.toJson(ecologicalRelationBuffer));
+            try {
+                communicator.getConnection().sendMessage(message);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return true;
         }
-
-        return true;
+        return false;
     }
 
     private EcologicalRelationBuffer generateEcologicalRelationBuffer(Term[] args) {
@@ -276,6 +277,6 @@ public class moveOut extends DefaultInternalAction {
     }
 
     private TransferenceActionType generateActionType(EcologicalRelationType ecologicalRelationType) {
-        return EcologicalRelationType.PREDATOR.equals(ecologicalRelationType) ? TransferenceActionType.GIVE_BIRTH_AND_KILL : TransferenceActionType.GIVE_BIRTH;
+        return EcologicalRelationType.PREDATOR.equals(ecologicalRelationType) ? TransferenceActionType.KILL_AND_GIVE_BIRTH : TransferenceActionType.GIVE_BIRTH;
     }
 }

@@ -3,8 +3,11 @@ package jason.architecture;
 import br.pro.turing.rma.core.model.Action;
 import br.pro.turing.rma.core.model.Device;
 import br.pro.turing.rma.core.service.ServiceManager;
-import jason.AslFileGenerator;
-import jason.AslTransferenceModel;
+import protocol.communication.SimpleCommunicationBuffer;
+import protocol.ecologicalrelation.AslFileGenerator;
+import protocol.ecologicalrelation.AslTransferenceModel;
+import protocol.ecologicalrelation.EcologicalRelationBuffer;
+import protocol.ecologicalrelation.TransferenceActionType;
 import jason.asSyntax.Plan;
 import jason.infra.centralised.CentralisedAgArch;
 import jason.infra.centralised.RunCentralisedMAS;
@@ -27,13 +30,10 @@ import java.util.stream.Collectors;
 
 public class Communicator extends AgArch implements NodeConnectionListener {
 
-    /** IoT by ContextNet connection instance. */
     private MrUdpNodeConnection connection;
 
-    /** Model of IoT objects. */
     private Device device;
 
-    /** State of connection. */
     private boolean connected = false;
 
     private final List<String> nameAgents = new ArrayList<>();
@@ -43,23 +43,6 @@ public class Communicator extends AgArch implements NodeConnectionListener {
     public Communicator() {
     }
 
-    private void onAction(Action action) {
-        // TODO transformar em chamada de plano.
-        for (Plan plan : getTS().getAg().getPL()) {
-            final String tevent = plan.getTerm(1).toString();
-            final String command = tevent.substring(2);
-            if (action.getCommand().equals(command)) {
-                jason.asSemantics.Message jasonMsgs = new jason.asSemantics.Message();
-                jasonMsgs.setIlForce("achieve");
-                jasonMsgs.setSender(this.getAgName());
-                jasonMsgs.setPropCont(command);
-                jasonMsgs.setReceiver(this.getAgName());
-                this.getTS().getC().addMsg(jasonMsgs);
-                break;
-            }
-        }
-    }
-
     @Override
     public void init() throws Exception {
         super.init();
@@ -67,7 +50,7 @@ public class Communicator extends AgArch implements NodeConnectionListener {
         String deviceConfigFilePath = aslFile.getParent() + File.separator + "deviceConfiguration.json";
         File deviceConfigFile = new File(deviceConfigFilePath);
         if (!deviceConfigFile.exists()) {
-            this.getTS().getLogger().severe("deviceConfiguration.json not found in '" + aslFile.getParent() + "'.");
+            this.getTS().getLogger().warning("deviceConfiguration.json not found in '" + aslFile.getParent() + "'. You cannot to communicate using the RMA.");
             return;
         }
 
@@ -118,7 +101,10 @@ public class Communicator extends AgArch implements NodeConnectionListener {
         } else {
             proccessDefaultCommunicatorMessage(receivedMessage);
         }
-        //todo proximo passo: revisar recepcao de sendout (estamos realmente colocando as mensagens no checkmail?), revisar maneira de implementar um agArch
+        //todo proximo passo:
+        // revisar recepcao de sendout (estamos realmente colocando as mensagens no checkmail?),
+        // revisar maneira de implementar um agArch,
+        // matar os agentes comunicadores após um kill
     }
 
     private void proccessDeviceMessage(String receivedMessage) {
@@ -133,10 +119,26 @@ public class Communicator extends AgArch implements NodeConnectionListener {
         }
     }
 
+    private void onAction(Action action) {
+        // TODO transformar em chamada de plano.
+        for (Plan plan : getTS().getAg().getPL()) {
+            final String tevent = plan.getTerm(1).toString();
+            final String command = tevent.substring(2);
+            if (action.getCommand().equals(command)) {
+                jason.asSemantics.Message jasonMsgs = new jason.asSemantics.Message();
+                jasonMsgs.setIlForce("achieve");
+                jasonMsgs.setSender(this.getAgName());
+                jasonMsgs.setPropCont(command);
+                jasonMsgs.setReceiver(this.getAgName());
+                this.getTS().getC().addMsg(jasonMsgs);
+                break;
+            }
+        }
+    }
+
     private void proccessActionMessage(String receivedMessage) {
         Action action = ServiceManager.getInstance().jsonService.fromJson(receivedMessage, Action.class);
         this.onAction(action);
-        // todo parei aqui. Precisa tipar a mensagem contextNet para conciliar RML com Contextnet comum. O protocolo de predação deve ser um comunicador estendido.
     }
 
     private void proccessEcologicalRelationMessage(String receivedMessage) {
@@ -148,7 +150,8 @@ public class Communicator extends AgArch implements NodeConnectionListener {
             giveBirthAgents(ecologicalRelationBuffer, aslFileGenerator);
         } else if (TransferenceActionType.KILL.equals(ecologicalRelationBuffer.getActionType())) {
             killAgents(ecologicalRelationBuffer);
-        } else if (TransferenceActionType.GIVE_BIRTH_AND_KILL.equals(ecologicalRelationBuffer.getActionType())) {
+        } else if (TransferenceActionType.KILL_AND_GIVE_BIRTH.equals(ecologicalRelationBuffer.getActionType())) {
+            killAllAgents();
             giveBirthAgents(ecologicalRelationBuffer, aslFileGenerator);
         }
         giveRelationFeedback(ecologicalRelationBuffer);
@@ -156,7 +159,10 @@ public class Communicator extends AgArch implements NodeConnectionListener {
 
     private void giveRelationFeedback(EcologicalRelationBuffer ecologicalRelationBuffer) {
         EcologicalRelationBuffer feedbackEcologicalRelationBuffer = new EcologicalRelationBuffer();
+        feedbackEcologicalRelationBuffer.setRelationType(ecologicalRelationBuffer.getRelationType());
         feedbackEcologicalRelationBuffer.setAgentsToKill(ecologicalRelationBuffer.getAgentsToGiveBirth());
+        feedbackEcologicalRelationBuffer.setActionType(TransferenceActionType.KILL);
+
         Message message = new ApplicationMessage();
         message.setContentObject(ServiceManager.getInstance().jsonService.toJson(feedbackEcologicalRelationBuffer));
         try {
@@ -191,92 +197,35 @@ public class Communicator extends AgArch implements NodeConnectionListener {
         }
     }
 
+    private void killAllAgents() {
+        Map<String, CentralisedAgArch> agentsOfTheSMA = RunCentralisedMAS.getRunner().getAgs();
+        for (CentralisedAgArch centralisedAgArch : agentsOfTheSMA.values()) {
+            String path = centralisedAgArch.getTS().getAg().getASLSrc();
+            File file = new File(path);
+            if (file.exists()) {
+                file.delete();
+            }
+        }
+    }
+
     private void proccessDefaultCommunicatorMessage(String receivedMessage) {
-        final char[] message = receivedMessage.toCharArray();
-        String preamble = String.valueOf(message, 0, 4);
-        if (preamble.equals("fffe")) {
-            String sender = "";
-            for (int cont = 6; cont < (this.hex2int(char2int(message[5]), char2int(message[4])) + 6); cont++) {
-                sender += message[cont];
-            }
-            String force = "";
-            String msg = "";
-            int nextValue = sender.length() + 6;
-            int shift = this.hex2int(char2int(message[nextValue + 1]), char2int(message[nextValue]));
-            for (int cont = nextValue + 2; cont <= (shift + nextValue + 1); cont++) {
-                force += message[cont];
-            }
-            nextValue = shift + nextValue + 2;
-            shift = this.hex2int(char2int(message[nextValue + 1]), char2int(message[nextValue]));
-            for (int cont = nextValue + 2; cont <= (shift + nextValue + 1); cont++) {
-                msg += message[cont];
-            }
+        SimpleCommunicationBuffer simpleCommunicationBuffer = ServiceManager.getInstance().jsonService.fromJson(receivedMessage, SimpleCommunicationBuffer.class);
 
-            jason.asSemantics.Message jasonMsgs = new jason.asSemantics.Message();
-            jasonMsgs.setIlForce(force);
-            jasonMsgs.setSender(sender);
-            jasonMsgs.setPropCont(msg);
-            jasonMsgs.setReceiver(this.getAgName());
-            //System.out.println("[ARGO]: The message is: " + jasonMsgs.toString());
-            this.jMsg.add(jasonMsgs);
-        }
+        jason.asSemantics.Message jasonMsgs = new jason.asSemantics.Message();
+        jasonMsgs.setIlForce(simpleCommunicationBuffer.getIlForce());
+        jasonMsgs.setSender(simpleCommunicationBuffer.getSender());
+        jasonMsgs.setPropCont(simpleCommunicationBuffer.getContent());
+        jasonMsgs.setReceiver(simpleCommunicationBuffer.getReceiver());
+        //System.out.println("[ARGO]: The message is: " + jasonMsgs.toString());
+        this.jMsg.add(jasonMsgs);
     }
 
-    private int hex2int(int x, int y) {
-        int converted = x + (y * 16);
-        return converted;
-    }
-
-    private int char2int(char charValue) {
-        int intValue = 0;
-        switch (charValue) {
-            case '1':
-                intValue = 1;
-                break;
-            case '2':
-                intValue = 2;
-                break;
-            case '3':
-                intValue = 3;
-                break;
-            case '4':
-                intValue = 4;
-                break;
-            case '5':
-                intValue = 5;
-                break;
-            case '6':
-                intValue = 6;
-                break;
-            case '7':
-                intValue = 7;
-                break;
-            case '8':
-                intValue = 8;
-                break;
-            case '9':
-                intValue = 9;
-                break;
-            case 'a':
-                intValue = 10;
-                break;
-            case 'b':
-                intValue = 11;
-                break;
-            case 'c':
-                intValue = 12;
-                break;
-            case 'd':
-                intValue = 13;
-                break;
-            case 'e':
-                intValue = 14;
-                break;
-            case 'f':
-                intValue = 15;
-                break;
+    @Override
+    public void checkMail() {
+        if (!this.jMsg.isEmpty()) {
+            this.getTS().getC().addMsg(this.jMsg.get(0));
+            this.jMsg.remove(0);
         }
-        return intValue;
     }
 
     /**

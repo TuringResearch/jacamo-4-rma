@@ -1,4 +1,4 @@
-package jason;
+package protocol.ecologicalrelation;
 
 import jason.architecture.AgArch;
 import jason.asSemantics.Agent;

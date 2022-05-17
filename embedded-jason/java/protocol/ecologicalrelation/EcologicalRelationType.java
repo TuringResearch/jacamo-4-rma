@@ -1,15 +1,27 @@
-package jason.architecture;
+package protocol.ecologicalrelation;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.io.Serializable;
 
 /**
  * Tipos de protocolo de transferência de agentes entre SMA distintos.
  */
-public enum EcologicalRelationType {
+public enum EcologicalRelationType implements Serializable {
+
     PREDATOR(1, "PREDATOR"),
     MUTUALISM(2, "MUTUALISM"),
     INQUILINISM(3, "INQUILINISM"),
 
     CAN_TRANSFER(4, "CAN TRANSFER THE AGENT(S)"),
     CAN_KILL(5, "CAN KILL THE AGENT(S)");
+
+    /** Serial version ID for serialization. */
+    private static final long serialVersionUID = 1L;
+
+    /** Class name to be used by JSON strings. */
+    @JsonIgnore
+    private final String className = getClass().getName();
 
     int id;
     String name;

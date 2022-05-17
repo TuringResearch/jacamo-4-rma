@@ -1,4 +1,6 @@
-package jason;
+package protocol.ecologicalrelation;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
 
@@ -6,6 +8,13 @@ import java.io.Serializable;
  * Modelo de transferência de agente.
  */
 public class AslTransferenceModel implements Serializable {
+
+    /** Serial version ID for serialization. */
+    private static final long serialVersionUID = 1L;
+
+    /** Class name to be used by JSON strings. */
+    @JsonIgnore
+    private final String className = getClass().getName();
 
     /** Nome do agente. */
     private String name;

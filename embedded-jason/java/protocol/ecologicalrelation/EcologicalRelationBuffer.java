@@ -1,10 +1,18 @@
-package jason.architecture;
+package protocol.ecologicalrelation;
 
-import jason.AslTransferenceModel;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class EcologicalRelationBuffer {
+public class EcologicalRelationBuffer implements Serializable {
+
+    /** Serial version ID for serialization. */
+    private static final long serialVersionUID = 1L;
+
+    /** Class name to be used by JSON strings. */
+    @JsonIgnore
+    private final String className = getClass().getName();
 
     private String token;
 

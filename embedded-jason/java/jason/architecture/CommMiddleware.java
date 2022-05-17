@@ -1,7 +1,8 @@
 package jason.architecture;
 
-import jason.AslFileGenerator;
-import jason.AslTransferenceModel;
+import protocol.ecologicalrelation.AslFileGenerator;
+import protocol.ecologicalrelation.AslTransferenceModel;
+import protocol.ecologicalrelation.EcologicalRelationType;
 import jason.asSyntax.Term;
 import jason.infra.centralised.CentralisedAgArch;
 import jason.infra.centralised.RunCentralisedMAS;
