@@ -18,12 +18,12 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>rma-4-cartago</artifactId>
+            <artifactId>embedded-cartago</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>rma-4-jason</artifactId>
+            <artifactId>embedded-jason</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
