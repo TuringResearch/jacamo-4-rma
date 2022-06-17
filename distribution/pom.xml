@@ -41,7 +41,7 @@
                                 <!-- Juntando o jar do cartago com o jar do rma-4-cartago. -->
                                 <unzip src="${basedir}/../lib/cartago-2.4.jar" dest="target/cartago-2.4"
                                        overwrite="true"/>
-                                <unzip src="${basedir}/../cartago-4-rma/target/cartago-4-rma-1.0.0.jar"
+                                <unzip src="${basedir}/../embedded-cartago/target/embedded-cartago-1.0.0.jar"
                                        dest="target/cartago-2.4"
                                        overwrite="true"/>
                                 <zip destfile="target/lib/cartago-2.4.jar"
@@ -50,7 +50,7 @@
                                 <!-- Juntando o jar do jason com o jar do rma-4-jason. -->
                                 <unzip src="${basedir}/../lib/jason-2.4.jar" dest="target/jason-2.4"
                                        overwrite="true"/>
-                                <unzip src="${basedir}/../jason-4-rma/target/jason-4-rma-1.0.0.jar"
+                                <unzip src="${basedir}/../embedded-jason/target/embedded-jason-1.0.0.jar"
                                        dest="target/jason-2.4"
                                        overwrite="true"/>
                                 <zip destfile="target/lib/jason-2.4.jar" basedir="${project.basedir}/target/jason-2.4"/>
