@@ -11,10 +11,7 @@ public enum EcologicalRelationType implements Serializable {
 
     PREDATOR(1, "PREDATOR"),
     MUTUALISM(2, "MUTUALISM"),
-    INQUILINISM(3, "INQUILINISM"),
-
-    CAN_TRANSFER(4, "CAN TRANSFER THE AGENT(S)"),
-    CAN_KILL(5, "CAN KILL THE AGENT(S)");
+    INQUILINISM(3, "INQUILINISM");
 
     /** Serial version ID for serialization. */
     private static final long serialVersionUID = 1L;

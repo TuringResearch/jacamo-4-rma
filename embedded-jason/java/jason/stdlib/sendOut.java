@@ -25,7 +25,6 @@ package jason.stdlib;
 
 import br.pro.turing.rma.core.service.ServiceManager;
 import jason.JasonException;
-import jason.architecture.CommMiddleware;
 import jason.architecture.Communicator;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.Message;
