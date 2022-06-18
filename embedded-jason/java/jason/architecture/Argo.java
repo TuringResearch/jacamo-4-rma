@@ -53,13 +53,18 @@ public class Argo extends AgArch {
         int cont;
         List<Literal> jPercept = new ArrayList<Literal>();
         try {
+            this.getTS().getLogger().info("Comecei");
             if (this.javino.requestData(this.port, "getPercepts")) {
+                this.getTS().getLogger().info("entrei no getPercepts");
                 String rwPercepts = this.javino.getData();
+                this.getTS().getLogger().info("rwPercepts: " + rwPercepts);
                 String[] perception = rwPercepts.split(";");
                 for (cont = 0; cont < perception.length; cont++) {
                     jPercept.add(Literal.parseLiteral(perception[cont]));
                 }
             }
+            this.getTS().getLogger().info("saí do if");
+
             for (Literal literal : jPercept) {
                 this.getTS().getLogger().info(literal.toString());
             }
