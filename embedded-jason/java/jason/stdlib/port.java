@@ -9,6 +9,8 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Term;
 
+import java.util.regex.Pattern;
+
 public class port extends DefaultInternalAction {
 
     private static final long serialVersionUID = -4841692752581197132L;
@@ -27,7 +29,9 @@ public class port extends DefaultInternalAction {
                 argoArch.setPort(illoc.toString());
                 ts.getLogger().info("ponto 5 if");
             } else {
-                argoArch.setPort("/dev/" + illoc.toString());
+                Pattern.compile("/");
+                System.out.println(illoc.toString());
+                argoArch.setPort("/dev/" + "ttyACM0");//illoc.toString());
                 ts.getLogger().info("ponto 5 else");
             }
             return true;
