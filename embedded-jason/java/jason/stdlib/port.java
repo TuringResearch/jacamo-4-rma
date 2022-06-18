@@ -29,9 +29,8 @@ public class port extends DefaultInternalAction {
                 argoArch.setPort(illoc.toString());
                 ts.getLogger().info("ponto 5 if");
             } else {
-                Pattern.compile("/");
                 System.out.println(illoc.toString());
-                argoArch.setPort("/dev/" + "ttyACM0");//illoc.toString());
+                argoArch.setPort("/dev/" + illoc.toString());
                 ts.getLogger().info("ponto 5 else");
             }
             return true;

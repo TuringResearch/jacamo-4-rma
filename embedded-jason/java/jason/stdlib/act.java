@@ -21,6 +21,7 @@ public class act extends DefaultInternalAction {
             if (argoArch.getJavino().sendCommand(argoArch.getPort(), action.toString())) {
                 return true;
             } else {
+                ts.getLogger().info("act não funcionou.");
                 return false;
             }
         } else {
