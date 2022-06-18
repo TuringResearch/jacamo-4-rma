@@ -44,7 +44,7 @@ public class percepts extends DefaultInternalAction {
                 argoArch.setBlocked(false);
                 return true;
             }
-            return true;
+            return false;
         } else {
             ts.getLogger().warning(
                     "Was not possible to call .percepts internal action because this AgArch is not an Argo.");

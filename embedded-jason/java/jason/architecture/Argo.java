@@ -58,8 +58,9 @@ public class Argo extends AgArch {
             for (cont = 0; cont < perception.length; cont++) {
                 jPercept.add(Literal.parseLiteral(perception[cont]));
             }
+            return jPercept;
         }
-        return jPercept;
+        return null;
     }
 
     public Javino getJavino() {
