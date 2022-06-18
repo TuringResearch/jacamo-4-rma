@@ -22,7 +22,7 @@ public class port extends DefaultInternalAction {
             if (os.substring(0, 1).equals("W")) {
                 argoArch.setPort(illoc.toString());
             } else {
-                argoArch.setPort("/" + illoc.toString());
+                argoArch.setPort("/dev/" + illoc.toString());
             }
             return true;
         } else {

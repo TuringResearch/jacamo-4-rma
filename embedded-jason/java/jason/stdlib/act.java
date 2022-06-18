@@ -18,7 +18,6 @@ public class act extends DefaultInternalAction {
         final Argo argoArch = Argo.getArgoArch(ts.getUserAgArch());
         if (argoArch != null) {
             Term action = args[0];
-            ts.getLogger().info(argoArch.getPort());
             if (argoArch.getJavino().sendCommand(argoArch.getPort(), action.toString())) {
                 return true;
             } else {
