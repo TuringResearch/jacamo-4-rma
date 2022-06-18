@@ -65,9 +65,6 @@ public class Argo extends AgArch {
                 }
             }
 
-            for (Literal literal : jPercept) {
-                this.getTS().getLogger().info(literal.toString());
-            }
             return jPercept;
         } catch (Exception e) {
             return null;
