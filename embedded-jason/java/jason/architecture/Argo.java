@@ -55,13 +55,15 @@ public class Argo extends AgArch {
         try {
             if (this.javino.requestData(this.port, "getPercepts")) {
                 String rwPercepts = this.javino.getData();
-                String[] perception = rwPercepts.split(";");
-                if (perception == null || perception.length == 0) {
-                    jPercept.add(Literal.parseLiteral(rwPercepts));
-                } else {
+                if (rwPercepts.contains(";")) {
+                    String[] perception = rwPercepts.split(";");
                     for (cont = 0; cont < perception.length; cont++) {
                         jPercept.add(Literal.parseLiteral(perception[cont]));
                     }
+                } else if (rwPercepts != null && !rwPercepts.isEmpty()) {
+                    jPercept.add(Literal.parseLiteral(rwPercepts));
+                } else {
+                    this.getTS().getLogger().warning("There is no message coming from sensors.");
                 }
             }
 
