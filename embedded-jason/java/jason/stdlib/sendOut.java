@@ -33,6 +33,7 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.StringTerm;
 import jason.asSyntax.Term;
+import jason.infra.centralised.RunCentralisedMAS;
 import lac.cnclib.sddl.message.ApplicationMessage;
 import protocol.communication.SimpleCommunicationBuffer;
 
@@ -197,25 +198,23 @@ public class sendOut extends DefaultInternalAction {
         checkArguments(args);
 
 
-        if (communicator.isConnected()) {
-            String receiverAlias = args[0].toString();
+        String receiverAlias = args[0].toString();
 
-            SimpleCommunicationBuffer simpleCommunicationBuffer = generateSimpleCommunicationBuffer(receiverAlias, args, communicator);
+        SimpleCommunicationBuffer simpleCommunicationBuffer = generateSimpleCommunicationBuffer(receiverAlias, args, communicator);
 
-            ApplicationMessage applicationMessage = new ApplicationMessage();
-            applicationMessage.setContentObject(ServiceManager.getInstance().jsonService.toJson(simpleCommunicationBuffer));
-            String receiverUUID = getUUIDFromAlias(receiverAlias);
-            applicationMessage.setRecipientID(UUID.fromString(receiverUUID));
+        ApplicationMessage applicationMessage = new ApplicationMessage();
+        applicationMessage.setContentObject(ServiceManager.getInstance().jsonService.toJson(simpleCommunicationBuffer));
+        String receiverUUID = getUUIDFromAlias(receiverAlias);
+        applicationMessage.setRecipientID(UUID.fromString(receiverUUID));
 //            applicationMessage.setRecipientID(UUID.fromString("788b2b22-baa6-4c61-b1bb-01cff1f5f878"));
 //            applicationMessage.setRecipientID(UUID.fromString("10638aef-dfa5-3de5-993b-b9966cd990b0"));
-            try {
-                communicator.getConnection().sendMessage(applicationMessage);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return true;
+        try {
+            String sender = CommunicatorUtils.getUUIDFromAlias(RunCentralisedMAS.getRunner().getProject().getSocName() + "_" + communicator.getAgName());
+            communicator.getCommMiddleware().sendMsgToContextNet(sender, receiverUUID, args[1], args[2]);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return true;
 
-        return false;
     }
 }

@@ -23,11 +23,11 @@ public class connect extends DefaultInternalAction {
      * @param gatewayPort Gateway port.
      */
     private void connect(Communicator communicator, String gatewayIP, int gatewayPort) throws IOException {
-        InetSocketAddress gatewayAddress = new InetSocketAddress(gatewayIP, gatewayPort);
-        final String uuid = communicator.getDevice() == null ? CommunicatorUtils.getUUID(communicator) : CommunicatorUtils.getUUIDFromFile(communicator);
-        communicator.setConnection(new MrUdpNodeConnection(UUID.fromString(uuid)));
-        communicator.getConnection().addNodeConnectionListener(communicator);
-        communicator.getConnection().connect(gatewayAddress);
+//        InetSocketAddress gatewayAddress = new InetSocketAddress(gatewayIP, gatewayPort);
+//        final String uuid = communicator.getDevice() == null ? CommunicatorUtils.getUUID(communicator) : CommunicatorUtils.getUUIDFromFile(communicator);
+//        communicator.setConnection(new MrUdpNodeConnection(UUID.fromString(uuid)));
+//        communicator.getConnection().addNodeConnectionListener(communicator);
+//        communicator.getConnection().connect(gatewayAddress);
     }
 
     @Override

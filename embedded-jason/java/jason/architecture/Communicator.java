@@ -30,13 +30,10 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class Communicator extends AgArch implements NodeConnectionListener {
-
-    private MrUdpNodeConnection connection;
-
+public class Communicator extends AgArch {
     private Device device;
 
-    private boolean connected = false;
+    private CommMiddleware commMiddleware = new CommMiddleware();
 
     private final List<String> nameAgents = new ArrayList<>();
 
@@ -48,11 +45,6 @@ public class Communicator extends AgArch implements NodeConnectionListener {
     @Override
     public void init() throws Exception {
         super.init();
-        InetSocketAddress gatewayAddress = new InetSocketAddress("skynet.turing.pro.br", 5500);
-        final String uuid = this.getDevice() == null ? CommunicatorUtils.getUUID(this) : CommunicatorUtils.getUUIDFromFile(this);
-        this.setConnection(new MrUdpNodeConnection(UUID.fromString(uuid)));
-        this.getConnection().addNodeConnectionListener(this);
-        this.getConnection().connect(gatewayAddress);
 
         File aslFile = new File(this.getTS().getAg().getASLSrc());
         String deviceConfigFilePath = aslFile.getParent() + File.separator + "deviceConfiguration.json";
@@ -64,63 +56,6 @@ public class Communicator extends AgArch implements NodeConnectionListener {
 
         Reader jsonFile = new FileReader(deviceConfigFile.getPath());
         this.device = ServiceManager.getInstance().jsonService.fromJson(jsonFile, Device.class);
-    }
-
-    /**
-     * Informs that this IoT Object is connected to RML server. Once connected, this Object will send a Device
-     * instance to be registered (if not exists on RML) or logged in (if this device is already registered).
-     *
-     * @param nodeConnection Node connection.
-     */
-    @Override
-    public void connected(NodeConnection nodeConnection) {
-        this.connected = true;
-        this.getTS().getLogger().info("[INFO] Connected to Skynet. UUID: " + this.getConnection().getClientUUID().toString());
-        this.getTS().getLogger().info("[TEMP] Certinho. UUID: " + CommunicatorUtils.getUUID(this));
-        new Thread(() -> {
-            if (this.device != null) {
-                String msg = ServiceManager.getInstance().jsonService.toJson(this.device);
-                Message message = new ApplicationMessage();
-                message.setContentObject(msg);
-                try {
-                    nodeConnection.sendMessage(message);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
-
-    /**
-     * Menage incoming messages from RML. If the message is about connection state, it means that the Device was
-     * registered or logged in RML. If message is about Action, a new action will be performed in some resource of
-     * this device.
-     *
-     * @param nodeConnection Node cnnection
-     * @param message        Message.
-     */
-    @Override
-    public final void newMessageReceived(NodeConnection nodeConnection, Message message) {
-        this.getTS().getLogger().info("[TEMP-krai] " + message.toString());
-        String receivedMessage = (String) Serialization.fromJavaByteStream(message.getContent());
-        if (ServiceManager.getInstance().jsonService.jasonIsObject(receivedMessage, Device.class.getName())) {
-            proccessDeviceMessage(receivedMessage);
-        } else if (ServiceManager.getInstance().jsonService.jasonIsObject(receivedMessage, Action.class.getName())) {
-            proccessActionMessage(receivedMessage);
-        } else if (ServiceManager.getInstance().jsonService.jasonIsObject(receivedMessage, EcologicalRelationBuffer.class.getName())) {
-            proccessEcologicalRelationMessage(receivedMessage);
-        } else {
-            proccessDefaultCommunicatorMessage(receivedMessage);
-        }
-        //todo proximo passo:
-        // revisar recepcao de sendout (estamos realmente colocando as mensagens no checkmail?),
-        // revisar maneira de implementar um agArch,
-        // matar os agentes comunicadores após um kill
-    }
-
-    private void proccessDeviceMessage(String receivedMessage) {
-        // TODO Log here for the TIME CONNECTION RECEIVE
-        this.device = ServiceManager.getInstance().jsonService.fromJson(receivedMessage, Device.class);
     }
 
     private void onAction(Action action) {
@@ -169,11 +104,11 @@ public class Communicator extends AgArch implements NodeConnectionListener {
 
         Message message = new ApplicationMessage();
         message.setContentObject(ServiceManager.getInstance().jsonService.toJson(feedbackEcologicalRelationBuffer));
-        try {
-            this.getConnection().sendMessage(message);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            this.getConnection().sendMessage(message);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     private void killAgents(EcologicalRelationBuffer ecologicalRelationBuffer) {
@@ -226,61 +161,15 @@ public class Communicator extends AgArch implements NodeConnectionListener {
 
     @Override
     public void checkMail() {
-        if (!this.jMsg.isEmpty()) {
-            this.getTS().getC().addMsg(this.jMsg.get(0));
-            this.jMsg.remove(0);
+        super.checkMail();
+        if (this.commMiddleware.hasMsg()) {
+            getTS().getC().addMsg(this.commMiddleware.checkMailCN());
+            this.commMiddleware.cleanMailBox();
         }
-    }
-
-    /**
-     * Informs that this IoT Object is reconnected to TML server.
-     *
-     * @param nodeConnection Node connection.
-     * @param socketAddress  Socket address.
-     * @param b              B
-     * @param b1             B1
-     */
-    @Override
-    public final void reconnected(NodeConnection nodeConnection, SocketAddress socketAddress, boolean b, boolean b1) {
-        this.connected = true;
-    }
-
-    /**
-     * Informs that this IoT Object is disconnected from RML server.
-     *
-     * @param nodeConnection Node connection.
-     */
-    @Override
-    public final void disconnected(NodeConnection nodeConnection) {
-        this.connected = false;
-    }
-
-    /**
-     * Informs that some messages was not sent. If this Application layer is connected to RML server, the unsert
-     * messages will be resent.
-     *
-     * @param nodeConnection Node connection.
-     * @param list           Unsent messages list.
-     */
-    @Override
-    public final void unsentMessages(NodeConnection nodeConnection, List<Message> list) {
-        StringBuilder errorMessageLog = new StringBuilder();
-        errorMessageLog.append("Unsent mesage(s):");
-        for (Message message : list) {
-            errorMessageLog.append("\n").append(Serialization.fromJavaByteStream(message.getContent()).toString());
-        }
-        for (Message message : list) {
-            try {
-                connection.sendMessage(message);
-            } catch (IOException e) {
-                return;
-            }
-        }
-    }
-
-    @Override
-    public final void internalException(NodeConnection nodeConnection, Exception e) {
-
+//        if (!this.jMsg.isEmpty()) {
+//            this.getTS().getC().addMsg(this.jMsg.get(0));
+//            this.jMsg.remove(0);
+//        }
     }
 
     /**
@@ -290,28 +179,16 @@ public class Communicator extends AgArch implements NodeConnectionListener {
         return this.device;
     }
 
-    /**
-     * @param connection {@link #connection}
-     */
-    public void setConnection(MrUdpNodeConnection connection) {
-        this.connection = connection;
-    }
-
-    /**
-     * @return {@link #connection}
-     */
-    public MrUdpNodeConnection getConnection() {
-        return this.connection;
-    }
-
-    /**
-     * @return {@link #connected}
-     */
-    public boolean isConnected() {
-        return this.connected;
-    }
-
     public List<String> getNameAgents() {
         return this.nameAgents;
+    }
+
+    public CommMiddleware getCommMiddleware() {
+        this.commMiddleware.setAgName(this.getAgName());
+        return this.commMiddleware;
+    }
+
+    public void addMessageToC() {
+        this.getTS().getC().addMsg(this.commMiddleware.checkMailCN());
     }
 }
