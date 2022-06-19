@@ -34,9 +34,7 @@ public class CommunicatorUtils {
         File file = new File(".device");
         String uuid;
         if (!file.exists()) {
-            String alias = RunCentralisedMAS.getRunner().getProject().getSocName() + "_" + communicator.getAgName();
-            communicator.getTS().getLogger().info("[TEMP] Nome do agente: " + alias);
-            uuid = getUUIDFromAlias(alias);
+            uuid = getUUID(communicator);
             setUUIDToFile(uuid);
             return uuid;
         }
@@ -50,6 +48,12 @@ public class CommunicatorUtils {
         } finally {
             inputStream.close();
         }
+    }
+
+    public static String getUUID(Communicator communicator) {
+        String alias = RunCentralisedMAS.getRunner().getProject().getSocName() + "_" + communicator.getAgName();
+        communicator.getTS().getLogger().info("[TEMP] Nome do agente: " + alias);
+        return getUUIDFromAlias(alias);
     }
 
     /**
