@@ -18,6 +18,9 @@ public class CommunicatorUtils {
         return stringOne;
     }
 
+    public static void main(String[] args) {
+        System.out.println(getUUIDFromAlias("testa"));
+    }
     public static String getUUIDFromAlias(String alias) {
         return UuidCreator.getNameBasedMd5(alias).toString();
     }
@@ -32,6 +35,7 @@ public class CommunicatorUtils {
         String uuid;
         if (!file.exists()) {
             String alias = RunCentralisedMAS.getRunner().getProject().getSocName() + "_" + communicator.getAgName();
+            communicator.getTS().getLogger().info("[TEMP] Nome do agente: " + alias);
             uuid = getUUIDFromAlias(alias);
             setUUIDToFile(uuid);
             return uuid;
