@@ -192,15 +192,19 @@ public class sendOut extends DefaultInternalAction {
         if (communicator == null) {
             ts.getLogger().warning(
                     "[WARNING] Was not possible to call .send_out internal action because this AgArch is not a Communicator.");
+            ts.getLogger().warning("[TEMP] 0");
             return false;
         }
         checkArguments(args);
 
 
+        communicator.getTS().getLogger().warning("[TEMP] Communicator is connected?: "+ communicator.isConnected());
         if (communicator.isConnected()) {
             String receiverAlias = args[0].toString();
+            communicator.getTS().getLogger().warning("[TEMP] 1");
 
             SimpleCommunicationBuffer simpleCommunicationBuffer = generateSimpleCommunicationBuffer(receiverAlias, args, communicator);
+            communicator.getTS().getLogger().warning("[TEMP] 2");
 
             ApplicationMessage applicationMessage = new ApplicationMessage();
             applicationMessage.setContentObject(ServiceManager.getInstance().jsonService.toJson(simpleCommunicationBuffer));
@@ -209,8 +213,10 @@ public class sendOut extends DefaultInternalAction {
             try {
                 communicator.getConnection().sendMessage(applicationMessage);
             } catch (IOException e) {
+                communicator.getTS().getLogger().warning("[TEMP] 3");
                 e.printStackTrace();
             }
+            communicator.getTS().getLogger().warning("[TEMP] 4");
             return true;
         }
 
