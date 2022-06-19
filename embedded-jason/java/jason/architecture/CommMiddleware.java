@@ -112,13 +112,11 @@ public class CommMiddleware implements NodeConnectionListener {
 		return this.jMsg.get(0);
 	}
 
-	public void sendMsgToContextNet(String sender, String receiver, Term force,
-			Term msg) {
+	public void sendMsgToContextNet(String sender, String receiver, Term force, Term msg) {
 		ApplicationMessage message = new ApplicationMessage();
 		message.setContentObject(this.prepareToSend(sender, force.toString(),
 				msg.toString()));
-		message.setRecipientID(UUID.fromString(receiver.substring(1,
-				receiver.length() - 1)));
+		message.setRecipientID(UUID.fromString(receiver));
 		try {
 			connection.sendMessage(message);
 		} catch (IOException e) {
