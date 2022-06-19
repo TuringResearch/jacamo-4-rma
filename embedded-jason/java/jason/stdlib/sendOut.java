@@ -38,6 +38,7 @@ import lac.cnclib.sddl.message.ApplicationMessage;
 import protocol.communication.SimpleCommunicationBuffer;
 
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import static jason.architecture.CommunicatorUtils.*;
 
@@ -204,6 +205,7 @@ public class sendOut extends DefaultInternalAction {
         ApplicationMessage applicationMessage = new ApplicationMessage();
         applicationMessage.setContentObject(ServiceManager.getInstance().jsonService.toJson(simpleCommunicationBuffer));
         String receiverUUID = getUUIDFromAlias(receiverAlias);
+        Logger.getLogger("").info("Alias: "+ receiverAlias + "   Printing UUID: " + receiverUUID);
         applicationMessage.setRecipientID(UUID.fromString(receiverUUID));
 //            applicationMessage.setRecipientID(UUID.fromString("788b2b22-baa6-4c61-b1bb-01cff1f5f878"));
 //            applicationMessage.setRecipientID(UUID.fromString("10638aef-dfa5-3de5-993b-b9966cd990b0"));
