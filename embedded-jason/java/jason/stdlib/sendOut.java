@@ -210,6 +210,7 @@ public class sendOut extends DefaultInternalAction {
             ts.getLogger().info("[TEMP] " + ServiceManager.getInstance().jsonService.toJson(simpleCommunicationBuffer));
             applicationMessage.setContentObject(ServiceManager.getInstance().jsonService.toJson(simpleCommunicationBuffer));
             String receiverUUID = getUUIDFromAlias(receiverAlias);
+            ts.getLogger().info("[TEMP] UUID: " + receiverUUID);
             applicationMessage.setRecipientID(UUID.fromString(receiverUUID));
             try {
                 communicator.getConnection().sendMessage(applicationMessage);

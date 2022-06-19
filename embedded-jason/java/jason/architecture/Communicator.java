@@ -67,7 +67,7 @@ public class Communicator extends AgArch implements NodeConnectionListener {
     @Override
     public void connected(NodeConnection nodeConnection) {
         this.connected = true;
-        this.getTS().getLogger().info("[INFO] Connected to Skynet.");
+        this.getTS().getLogger().info("[INFO] Connected to Skynet. UUID: " + nodeConnection.getUuid().toString());
         new Thread(() -> {
             if (this.device != null) {
                 String msg = ServiceManager.getInstance().jsonService.toJson(this.device);
