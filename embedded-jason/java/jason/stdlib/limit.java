@@ -25,7 +25,7 @@ public class limit extends DefaultInternalAction {
             }
         } else {
             ts.getLogger().warning(
-                    "Was not possible to call .limit internal action because this AgArch is not an Argo.");
+                    "[WARNING] Was not possible to call .limit internal action because this AgArch is not an Argo.");
             return false;
         }
     }

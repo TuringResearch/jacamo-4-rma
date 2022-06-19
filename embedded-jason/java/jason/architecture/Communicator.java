@@ -50,7 +50,7 @@ public class Communicator extends AgArch implements NodeConnectionListener {
         String deviceConfigFilePath = aslFile.getParent() + File.separator + "deviceConfiguration.json";
         File deviceConfigFile = new File(deviceConfigFilePath);
         if (!deviceConfigFile.exists()) {
-            this.getTS().getLogger().warning("deviceConfiguration.json not found in '" + aslFile.getParent() + "'. You cannot to communicate using the RMA.");
+            this.getTS().getLogger().warning("[WARNING] deviceConfiguration.json not found in '" + aslFile.getParent() + "'. You cannot to communicate using the RMA.");
             return;
         }
 
@@ -67,16 +67,18 @@ public class Communicator extends AgArch implements NodeConnectionListener {
     @Override
     public void connected(NodeConnection nodeConnection) {
         new Thread(() -> {
-            String msg = ServiceManager.getInstance().jsonService.toJson(this.device);
-            Message message = new ApplicationMessage();
-            message.setContentObject(msg);
-            try {
-                nodeConnection.sendMessage(message);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
+            if (this.device != null) {
+                String msg = ServiceManager.getInstance().jsonService.toJson(this.device);
+                Message message = new ApplicationMessage();
+                message.setContentObject(msg);
+                try {
+                    nodeConnection.sendMessage(message);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return;
+                }
             }
-            // TODO Log here for the TIME CONNECTION SEND
+            this.getTS().getLogger().info("[INFO] Connected to Skynet.");
             this.connected = true;
         }).start();
     }

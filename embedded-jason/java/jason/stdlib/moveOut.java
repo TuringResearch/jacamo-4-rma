@@ -226,7 +226,7 @@ public class moveOut extends DefaultInternalAction {
         Communicator communicator = getCommunicatorArch(ts.getUserAgArch());
         if (communicator == null) {
             ts.getLogger().warning(
-                    "Was not possible to call .move_out internal action because this AgArch is not a Communicator.");
+                    "[WARNING] Was not possible to call .move_out internal action because this AgArch is not a Communicator.");
             return false;
         }
         checkArguments(args);

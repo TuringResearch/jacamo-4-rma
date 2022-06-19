@@ -19,7 +19,6 @@ public class port extends DefaultInternalAction {
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) {
         final Argo argoArch = Argo.getArgoArch(ts.getUserAgArch());
-        ts.getLogger().info(RunCentralisedMAS.getRunner().getProject().getSocName() + "_" + argoArch.getAgName());
         if (argoArch != null) {
             Term illoc = args[0];
             String os = System.getProperty("os.name");
@@ -32,7 +31,7 @@ public class port extends DefaultInternalAction {
             return true;
         } else {
             ts.getLogger().warning(
-                    "Was not possible to call .port internal action because this AgArch is not an Argo.");
+                    "[WARNING] Was not possible to call .port internal action because this AgArch is not an Argo.");
             return false;
         }
     }

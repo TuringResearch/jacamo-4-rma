@@ -38,11 +38,11 @@ public class connect extends DefaultInternalAction {
             final String gatewayIp = args[0].toString();
             final int gatewayPort = Integer.parseInt(args[1].toString());
             this.connect(communicator, gatewayIp, gatewayPort);
-            ts.getLogger().info("Connecting to ContextNet. IP: " + gatewayIp + " and PORT: " + gatewayPort);
+            ts.getLogger().info("[INFO] Connecting to ContextNet. IP: " + gatewayIp + " and PORT: " + gatewayPort);
             return true;
         } else {
             ts.getLogger().warning(
-                    "Was not possible to call .connect internal action because this AgArch is not a Communicator.");
+                    "[WARNING] Was not possible to call .connect internal action because this AgArch is not a Communicator.");
             return false;
         }
     }

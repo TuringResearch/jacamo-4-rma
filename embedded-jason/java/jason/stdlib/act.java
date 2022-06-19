@@ -21,12 +21,12 @@ public class act extends DefaultInternalAction {
             if (argoArch.getJavino().sendCommand(argoArch.getPort(), action.toString())) {
                 return true;
             } else {
-                ts.getLogger().info("act não funcionou.");
+                ts.getLogger().info("[INFO] act did not work.");
                 return false;
             }
         } else {
             ts.getLogger().warning(
-                    "Was not possible to call .act internal action because this AgArch is not an Argo.");
+                    "[WARNING] Was not possible to call .act internal action because this AgArch is not an Argo.");
             return false;
         }
     }

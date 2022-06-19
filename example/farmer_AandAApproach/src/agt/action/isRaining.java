@@ -26,7 +26,7 @@ public class isRaining extends DefaultInternalAction {
                 return true;
             }
         } catch (IOException e) {
-        	ts.getAg().getLogger().info("error in isRining.");
+        	ts.getAg().getLogger().info("[INFO] error in isRining.");
         }
         // everything ok, so returns true
         return false;

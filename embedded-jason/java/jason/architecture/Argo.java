@@ -59,7 +59,7 @@ public class Argo extends AgArch {
                 } else if (rwPercepts != null && !rwPercepts.isEmpty()) {
                     jPercept.add(Literal.parseLiteral(rwPercepts));
                 } else {
-                    this.getTS().getLogger().warning("There is no message coming from sensors.");
+                    this.getTS().getLogger().warning("[WARNING] There is no message coming from sensors.");
                 }
             }
 

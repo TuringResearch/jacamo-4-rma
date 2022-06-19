@@ -47,7 +47,7 @@ public class percepts extends DefaultInternalAction {
             return false;
         } else {
             ts.getLogger().warning(
-                    "Was not possible to call .percepts internal action because this AgArch is not an Argo.");
+                    "[WARNING] Was not possible to call .percepts internal action because this AgArch is not an Argo.");
             return false;
         }
     }

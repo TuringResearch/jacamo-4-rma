@@ -81,7 +81,7 @@ public class sendToRml extends DefaultInternalAction {
             });
 
             if (bb.size() > 0 && resourceLiteralMap.isEmpty()) {
-                ts.getLogger().warning("[sentToRml] No beliefs is a Resource's Data.");
+                ts.getLogger().warning("[WARNING] [sentToRml] No beliefs is a Resource's Data.");
             } else if (!resourceLiteralMap.isEmpty()) {
                 resourceLiteralMap.forEach((resource, data) -> {
                     this.sendDataToRml(communicator, data);
@@ -90,7 +90,7 @@ public class sendToRml extends DefaultInternalAction {
             return true;
         } else {
             ts.getLogger().warning(
-                    "Was not possible to call .sendToRml internal action because this AgArch is not a Communicator.");
+                    "[WARNING] Was not possible to call .sendToRml internal action because this AgArch is not a Communicator.");
             return false;
         }
     }
