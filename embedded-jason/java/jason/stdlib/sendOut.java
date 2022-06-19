@@ -201,7 +201,7 @@ public class sendOut extends DefaultInternalAction {
         communicator.getTS().getLogger().warning("[TEMP] Communicator is connected?: "+ communicator.isConnected());
         if (communicator.isConnected()) {
             String receiverAlias = args[0].toString();
-            communicator.getTS().getLogger().warning("[TEMP] 1");
+            communicator.getTS().getLogger().warning("[TEMP] 1: " + receiverAlias);
 
             SimpleCommunicationBuffer simpleCommunicationBuffer = generateSimpleCommunicationBuffer(receiverAlias, args, communicator);
             communicator.getTS().getLogger().warning("[TEMP] 2");
