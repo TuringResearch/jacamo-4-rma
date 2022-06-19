@@ -28,7 +28,6 @@ public class connect extends DefaultInternalAction {
         communicator.setConnection(new MrUdpNodeConnection(UUID.fromString(uuid)));
         communicator.getConnection().addNodeConnectionListener(communicator);
         communicator.getConnection().connect(gatewayAddress);
-        communicator.getTS().getLogger().info("[TEMP] " + communicator.getConnection().getUuid());
     }
 
     @Override

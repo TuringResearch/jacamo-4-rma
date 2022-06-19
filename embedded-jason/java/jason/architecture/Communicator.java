@@ -22,10 +22,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class Communicator extends AgArch implements NodeConnectionListener {
@@ -46,6 +48,12 @@ public class Communicator extends AgArch implements NodeConnectionListener {
     @Override
     public void init() throws Exception {
         super.init();
+        InetSocketAddress gatewayAddress = new InetSocketAddress("skynet.turing.pro.br", 5500);
+        final String uuid = this.getDevice() == null ? CommunicatorUtils.getUUID(this) : CommunicatorUtils.getUUIDFromFile(this);
+        this.setConnection(new MrUdpNodeConnection(UUID.fromString(uuid)));
+        this.getConnection().addNodeConnectionListener(this);
+        this.getConnection().connect(gatewayAddress);
+
         File aslFile = new File(this.getTS().getAg().getASLSrc());
         String deviceConfigFilePath = aslFile.getParent() + File.separator + "deviceConfiguration.json";
         File deviceConfigFile = new File(deviceConfigFilePath);

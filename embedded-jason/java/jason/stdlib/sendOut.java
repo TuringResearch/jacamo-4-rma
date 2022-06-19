@@ -192,35 +192,27 @@ public class sendOut extends DefaultInternalAction {
         if (communicator == null) {
             ts.getLogger().warning(
                     "[WARNING] Was not possible to call .send_out internal action because this AgArch is not a Communicator.");
-            ts.getLogger().warning("[TEMP] 0");
             return false;
         }
         checkArguments(args);
 
 
-        communicator.getTS().getLogger().warning("[TEMP] Communicator is connected?: "+ communicator.isConnected());
         if (communicator.isConnected()) {
             String receiverAlias = args[0].toString();
-            communicator.getTS().getLogger().warning("[TEMP] 1: " + receiverAlias);
 
             SimpleCommunicationBuffer simpleCommunicationBuffer = generateSimpleCommunicationBuffer(receiverAlias, args, communicator);
-            communicator.getTS().getLogger().warning("[TEMP] 2");
 
             ApplicationMessage applicationMessage = new ApplicationMessage();
-            ts.getLogger().info("[TEMP] " + ServiceManager.getInstance().jsonService.toJson(simpleCommunicationBuffer));
             applicationMessage.setContentObject(ServiceManager.getInstance().jsonService.toJson(simpleCommunicationBuffer));
             String receiverUUID = getUUIDFromAlias(receiverAlias);
-            ts.getLogger().info("[TEMP] UUID: " + receiverUUID);
-            applicationMessage.setRecipientID(UUID.fromString(receiverUUID.substring(1, receiverUUID.length() - 1)));
+            applicationMessage.setRecipientID(UUID.fromString(receiverUUID));
 //            applicationMessage.setRecipientID(UUID.fromString("788b2b22-baa6-4c61-b1bb-01cff1f5f878"));
 //            applicationMessage.setRecipientID(UUID.fromString("10638aef-dfa5-3de5-993b-b9966cd990b0"));
             try {
                 communicator.getConnection().sendMessage(applicationMessage);
             } catch (IOException e) {
-                communicator.getTS().getLogger().warning("[TEMP] 3");
                 e.printStackTrace();
             }
-            communicator.getTS().getLogger().warning("[TEMP] 4");
             return true;
         }
 
