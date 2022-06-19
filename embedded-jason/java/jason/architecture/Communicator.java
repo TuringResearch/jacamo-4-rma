@@ -110,13 +110,6 @@ public class Communicator extends AgArch implements NodeConnectionListener {
     private void proccessDeviceMessage(String receivedMessage) {
         // TODO Log here for the TIME CONNECTION RECEIVE
         this.device = ServiceManager.getInstance().jsonService.fromJson(receivedMessage, Device.class);
-        try {
-            if (CommunicatorUtils.getUUIDFromFile().isEmpty()) {
-                CommunicatorUtils.setUUIDToFile(this.device.getUUID());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void onAction(Action action) {

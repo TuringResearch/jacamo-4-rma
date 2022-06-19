@@ -8,6 +8,7 @@ import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Term;
+import jason.infra.centralised.RunCentralisedMAS;
 
 import java.util.regex.Pattern;
 
@@ -17,21 +18,16 @@ public class port extends DefaultInternalAction {
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) {
-        ts.getLogger().info("ponto 1");
         final Argo argoArch = Argo.getArgoArch(ts.getUserAgArch());
-        ts.getLogger().info("ponto 2");
+        ts.getLogger().info(RunCentralisedMAS.getRunner().getProject().getSocName() + "_" + argoArch.getAgName());
         if (argoArch != null) {
-            ts.getLogger().info("ponto 3");
             Term illoc = args[0];
-            ts.getLogger().info("ponto 4");
             String os = System.getProperty("os.name");
             if (os.substring(0, 1).equals("W")) {
                 argoArch.setPort(illoc.toString());
-                ts.getLogger().info("ponto 5 if");
             } else {
                 System.out.println(illoc.toString());
                 argoArch.setPort("/dev/" + illoc.toString());
-                ts.getLogger().info("ponto 5 else");
             }
             return true;
         } else {

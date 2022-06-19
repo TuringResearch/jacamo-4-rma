@@ -17,7 +17,7 @@ java.lang.InterruptedException
 	at net.rudp.ReliableSocket.connect(ReliableSocket.java:338)
 	at lac.cnclib.net.mrudp.MrUdpNodeConnection.connect(MrUdpNodeConnection.java:243)
 	at jason.architecture.Communicator.connect(Communicator.java:115)
-	at jason.stdlib.connectToRml.execute(connectToRml.java:18)
+	at jason.stdlib.connect.execute(connectToRml.java:18)
 	at jason.asSemantics.TransitionSystem.applyExecInt(TransitionSystem.java:737)
 	at jason.asSemantics.TransitionSystem.applySemanticRuleAct(TransitionSystem.java:230)
 	at jason.asSemantics.TransitionSystem.act(TransitionSystem.java:1534)

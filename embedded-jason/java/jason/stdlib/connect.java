@@ -14,7 +14,7 @@ import java.util.UUID;
 
 import static jason.architecture.CommunicatorUtils.getCommunicatorArch;
 
-public class connectToRml extends DefaultInternalAction {
+public class connect extends DefaultInternalAction {
 
     /**
      * Connects to the RML.
@@ -24,8 +24,8 @@ public class connectToRml extends DefaultInternalAction {
      */
     private void connect(Communicator communicator, String gatewayIP, int gatewayPort) throws IOException {
         InetSocketAddress gatewayAddress = new InetSocketAddress(gatewayIP, gatewayPort);
-        final String uuid = CommunicatorUtils.getUUIDFromFile();
-        communicator.setConnection(uuid.isEmpty() ? new MrUdpNodeConnection() : new MrUdpNodeConnection(UUID.fromString(uuid)));
+        final String uuid = CommunicatorUtils.getUUIDFromFile(communicator);
+        communicator.setConnection(new MrUdpNodeConnection(UUID.fromString(uuid)));
         communicator.getConnection().addNodeConnectionListener(communicator);
         communicator.getConnection().connect(gatewayAddress);
     }
@@ -38,12 +38,11 @@ public class connectToRml extends DefaultInternalAction {
             final String gatewayIp = args[0].toString();
             final int gatewayPort = Integer.parseInt(args[1].toString());
             this.connect(communicator, gatewayIp, gatewayPort);
-            ts.getLogger().warning("Connected to RML.");
+            ts.getLogger().info("Connecting to ContextNet. IP: " + gatewayIp + " and PORT: " + gatewayPort);
             return true;
         } else {
             ts.getLogger().warning(
-                    "Was not possible to call .connectToRml internal action because this AgArch is not a Communicator"
-                            + ".");
+                    "Was not possible to call .connect internal action because this AgArch is not a Communicator.");
             return false;
         }
     }

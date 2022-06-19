@@ -1,5 +1,8 @@
 package jason.architecture;
 
+import com.github.f4b6a3.uuid.UuidCreator;
+import jason.infra.centralised.RunCentralisedMAS;
+
 import java.io.*;
 import java.nio.file.Files;
 
@@ -20,17 +23,19 @@ public class CommunicatorUtils {
      *
      * @return UUID or empty text.
      */
-    public static String getUUIDFromFile() throws IOException {
+    public static String getUUIDFromFile(Communicator communicator) throws IOException {
         File file = new File(".device");
+        String uuid;
         if (!file.exists()) {
-            return "";
+            uuid = UuidCreator.getNameBasedMd5("teste").toString();
+            setUUIDToFile(uuid);
+            return uuid;
         }
 
         InputStream inputStream = null;
         try {
             inputStream = new FileInputStream(file);
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            final String uuid;
             uuid = bufferedReader.readLine();
             return uuid;
         } finally {

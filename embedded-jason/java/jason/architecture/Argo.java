@@ -9,10 +9,6 @@ import java.util.List;
 
 public class Argo extends AgArch {
 
-    public static void main(String[] args) {
-        String os = System.getProperty("os.name");
-        System.out.println(os);
-    }
     public static final String DEFAULT_PORT = "COM1";
 
     public Javino javino = new Javino();
