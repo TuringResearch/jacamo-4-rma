@@ -9,6 +9,7 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import lac.cnclib.net.NodeConnection;
 import lac.cnclib.net.NodeConnectionListener;
@@ -69,7 +70,7 @@ public class CommMiddleware implements NodeConnectionListener {
 	}
 
 	public void newMessageReceived(NodeConnection remoteCon, Message message) {
-		System.out.println("[COMMUNICATOR] - teste");
+		Logger.getLogger("").info("[COMMUNICATOR] - teste");
 		String receivedMessage = (String) Serialization.fromJavaByteStream(message.getContent());
 		SimpleCommunicationBuffer simpleCommunicationBuffer = ServiceManager.getInstance().jsonService.fromJson(receivedMessage, SimpleCommunicationBuffer.class);
 
