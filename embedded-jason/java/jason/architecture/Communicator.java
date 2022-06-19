@@ -93,7 +93,7 @@ public class Communicator extends AgArch implements NodeConnectionListener {
      */
     @Override
     public final void newMessageReceived(NodeConnection nodeConnection, Message message) {
-        this.getTS().getLogger().info("[TEMP] " + message.toString());
+        this.getTS().getLogger().info("[TEMP-krai] " + message.toString());
         String receivedMessage = (String) Serialization.fromJavaByteStream(message.getContent());
         if (ServiceManager.getInstance().jsonService.jasonIsObject(receivedMessage, Device.class.getName())) {
             proccessDeviceMessage(receivedMessage);
