@@ -207,6 +207,7 @@ public class sendOut extends DefaultInternalAction {
             communicator.getTS().getLogger().warning("[TEMP] 2");
 
             ApplicationMessage applicationMessage = new ApplicationMessage();
+            ts.getLogger().info("[TEMP] " + ServiceManager.getInstance().jsonService.toJson(simpleCommunicationBuffer));
             applicationMessage.setContentObject(ServiceManager.getInstance().jsonService.toJson(simpleCommunicationBuffer));
             String receiverUUID = getUUIDFromAlias(receiverAlias);
             applicationMessage.setRecipientID(UUID.fromString(receiverUUID));
