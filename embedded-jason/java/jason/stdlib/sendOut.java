@@ -211,8 +211,8 @@ public class sendOut extends DefaultInternalAction {
             applicationMessage.setContentObject(ServiceManager.getInstance().jsonService.toJson(simpleCommunicationBuffer));
             String receiverUUID = getUUIDFromAlias(receiverAlias);
             ts.getLogger().info("[TEMP] UUID: " + receiverUUID);
-            applicationMessage.setRecipientID(UUID.fromString(receiverUUID));
-//            applicationMessage.setRecipientID(UUID.fromString("788b2b22-baa6-4c61-b1bb-01cff1f5f878"));
+//            applicationMessage.setRecipientID(UUID.fromString(receiverUUID));
+            applicationMessage.setRecipientID(UUID.fromString("788b2b22-baa6-4c61-b1bb-01cff1f5f878"));
             try {
                 communicator.getConnection().sendMessage(applicationMessage);
             } catch (IOException e) {
