@@ -18,6 +18,10 @@ public class CommunicatorUtils {
         return stringOne;
     }
 
+    public static String getUUIDFromAlias(String alias) {
+        return UuidCreator.getNameBasedMd5(alias).toString();
+    }
+
     /**
      * Search by an UUID if exists.
      *
@@ -27,7 +31,8 @@ public class CommunicatorUtils {
         File file = new File(".device");
         String uuid;
         if (!file.exists()) {
-            uuid = UuidCreator.getNameBasedMd5("teste").toString();
+            String alias = RunCentralisedMAS.getRunner().getProject().getSocName() + "_" + communicator.getAgName();
+            uuid = getUUIDFromAlias(alias);
             setUUIDToFile(uuid);
             return uuid;
         }

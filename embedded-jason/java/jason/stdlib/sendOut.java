@@ -26,6 +26,7 @@ package jason.stdlib;
 import br.pro.turing.rma.core.service.ServiceManager;
 import jason.JasonException;
 import jason.architecture.Communicator;
+import jason.architecture.CommunicatorUtils;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.Message;
 import jason.asSemantics.TransitionSystem;
@@ -197,13 +198,14 @@ public class sendOut extends DefaultInternalAction {
 
 
         if (communicator.isConnected()) {
-            String receiver = args[0].toString();
+            String receiverAlias = args[0].toString();
 
-            SimpleCommunicationBuffer simpleCommunicationBuffer = generateSimpleCommunicationBuffer(receiver, args, communicator);
+            SimpleCommunicationBuffer simpleCommunicationBuffer = generateSimpleCommunicationBuffer(receiverAlias, args, communicator);
 
             ApplicationMessage applicationMessage = new ApplicationMessage();
             applicationMessage.setContentObject(ServiceManager.getInstance().jsonService.toJson(simpleCommunicationBuffer));
-            applicationMessage.setRecipientID(UUID.fromString(receiver.substring(1, receiver.length() - 1)));
+            String receiverUUID = getUUIDFromAlias(receiverAlias);
+            applicationMessage.setRecipientID(UUID.fromString(receiverUUID));
             try {
                 communicator.getConnection().sendMessage(applicationMessage);
             } catch (IOException e) {
