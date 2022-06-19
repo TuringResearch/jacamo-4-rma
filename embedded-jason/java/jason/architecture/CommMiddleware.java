@@ -69,6 +69,7 @@ public class CommMiddleware implements NodeConnectionListener {
 	}
 
 	public void newMessageReceived(NodeConnection remoteCon, Message message) {
+		System.out.println("[COMMUNICATOR] - teste");
 		String receivedMessage = (String) Serialization.fromJavaByteStream(message.getContent());
 		SimpleCommunicationBuffer simpleCommunicationBuffer = ServiceManager.getInstance().jsonService.fromJson(receivedMessage, SimpleCommunicationBuffer.class);
 
