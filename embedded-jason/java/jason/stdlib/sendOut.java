@@ -37,7 +37,6 @@ import jason.infra.centralised.RunCentralisedMAS;
 import lac.cnclib.sddl.message.ApplicationMessage;
 import protocol.communication.SimpleCommunicationBuffer;
 
-import java.io.IOException;
 import java.util.UUID;
 
 import static jason.architecture.CommunicatorUtils.*;
@@ -174,13 +173,13 @@ public class sendOut extends DefaultInternalAction {
         }
     }
 
-    private SimpleCommunicationBuffer generateSimpleCommunicationBuffer(String receiver, Term[] args, Communicator communicator) {
+    private SimpleCommunicationBuffer generateSimpleCommunicationBuffer(TransitionSystem ts, String receiver, Term[] args) {
         Term illocutionaryForce = args[1];
         Term message = args[2];
 
         SimpleCommunicationBuffer simpleCommunicationBuffer = new SimpleCommunicationBuffer();
         simpleCommunicationBuffer.setIlForce(illocutionaryForce.toString());
-        simpleCommunicationBuffer.setSender(communicator.getAgName());
+        simpleCommunicationBuffer.setSender(ts.getUserAgArch().getAgName());
         simpleCommunicationBuffer.setReceiver(receiver);
         simpleCommunicationBuffer.setContent(message.toString());
 
@@ -200,7 +199,7 @@ public class sendOut extends DefaultInternalAction {
 
         String receiverAlias = args[0].toString();
 
-        SimpleCommunicationBuffer simpleCommunicationBuffer = generateSimpleCommunicationBuffer(receiverAlias, args, communicator);
+        SimpleCommunicationBuffer simpleCommunicationBuffer = generateSimpleCommunicationBuffer(ts, receiverAlias, args);
 
         ApplicationMessage applicationMessage = new ApplicationMessage();
         applicationMessage.setContentObject(ServiceManager.getInstance().jsonService.toJson(simpleCommunicationBuffer));
@@ -210,7 +209,7 @@ public class sendOut extends DefaultInternalAction {
 //            applicationMessage.setRecipientID(UUID.fromString("10638aef-dfa5-3de5-993b-b9966cd990b0"));
         try {
             String sender = CommunicatorUtils.getUUIDFromAlias(RunCentralisedMAS.getRunner().getProject().getSocName() + "_" + communicator.getAgName());
-            communicator.getCommMiddleware().sendMsgToContextNet(sender, receiverUUID, args[1], args[2]);
+            communicator.getCommMiddleware().sendMsgToContextNet(sender, receiverUUID, args[1], args[2], applicationMessage);
         } catch (Exception e) {
             e.printStackTrace();
         }
